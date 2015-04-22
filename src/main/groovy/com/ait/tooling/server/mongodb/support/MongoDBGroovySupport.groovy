@@ -16,6 +16,7 @@
 
 package com.ait.tooling.server.mongodb.support
 
+import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
 import com.ait.tooling.common.api.java.util.StringOps
@@ -27,6 +28,7 @@ import com.ait.tooling.server.mongodb.MongoDBContext
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
 
+@CompileStatic
 public class MongoDBGroovySupport extends CoreGroovySupport
 {
     @Memoized
