@@ -149,7 +149,7 @@ public final class MongoDB
 
     public static final class MCollection
     {
-        private static final Document           NO_ID = new Document().append(ID_FIELD, false);
+        private static final MDocument           NO_ID = new MDocument(new Document().append(ID_FIELD, false));
 
         private final MongoCollection<Document> m_collection;
 
@@ -163,18 +163,18 @@ public final class MongoDB
             return m_collection.getNamespace().getCollectionName();
         }
 
-        public final MCollection createIndex(Map<String, Object> keys)
+        public final MCollection createIndex(Map<String, ?> keys)
         {
-            m_collection.createIndex(new Document(keys));
+            m_collection.createIndex(new MDocument(keys));
 
             return this;
         }
 
-        public final MCollection createIndex(Map<String, Object> arg0, Map<String, Object> arg1)
+        public final MCollection createIndex(Map<String, ?> arg0, Map<String, ?> arg1)
         {
             IndexOptions opts = new IndexOptions();
 
-            m_collection.createIndex(new Document(arg0), opts);
+            m_collection.createIndex(new MDocument(arg0), opts);
 
             return this;
         }
@@ -184,14 +184,15 @@ public final class MongoDB
             m_collection.drop();
         }
 
-        public final MCollection remove(Map<String, Object> query)
+        public final MCollection remove(Map<String, ?> query)
         {
-            m_collection.deleteMany(new Document(query));
+            m_collection.deleteMany(new MDocument(query));
 
             return this;
         }
 
-        private final Map<String, Object> ensureid(Map<String, Object> update)
+        @SuppressWarnings("unchecked")
+        private final Map<String, ?> ensureid(Map<String, ?> update)
         {
             Object id = update.get("id");
 
@@ -202,20 +203,20 @@ public final class MongoDB
             return update;
         }
 
-        public final MCollection insert(Map<String, Object> record)
+        public final MCollection insert(Map<String, ?> record)
         {
-            m_collection.insertOne(new Document(ensureid(record)));
+            m_collection.insertOne(new MDocument(ensureid(record)));
 
             return this;
         }
 
-        public final MCollection insert(List<Map<String, Object>> list)
+        public final MCollection insert(List<Map<String, ?>> list)
         {
-            ArrayList<Document> save = new ArrayList<Document>(list.size());
+            ArrayList<MDocument> save = new ArrayList<MDocument>(list.size());
 
-            for (Map<String, Object> lmap : list)
+            for (Map<String, ?> lmap : list)
             {
-                save.add(new Document(ensureid(lmap)));
+                save.add(new MDocument(ensureid(lmap)));
             }
             m_collection.insertMany(save);
 
@@ -227,9 +228,9 @@ public final class MongoDB
             return m_collection.count();
         }
 
-        public final long count(Map<String, Object> query)
+        public final long count(Map<String, ?> query)
         {
-            return m_collection.count(new Document(query));
+            return m_collection.count(new MDocument(query));
         }
 
         public final MCursor find() throws Exception
@@ -254,75 +255,75 @@ public final class MongoDB
             }
         }
 
-        public final MCursor find(Map<String, Object> query) throws Exception
+        public final MCursor find(Map<String, ?> query) throws Exception
         {
-            return new MCursor(m_collection.find(new Document(query)));
+            return new MCursor(m_collection.find(new MDocument(query)));
         }
 
-        public final MCursor find(Map<String, Object> query, boolean with_id) throws Exception
+        public final MCursor find(Map<String, ?> query, boolean with_id) throws Exception
         {
             if (with_id)
             {
-                return new MCursor(m_collection.find(new Document(query)));
+                return new MCursor(m_collection.find(new MDocument(query)));
             }
             else
             {
-                return new MCursor(m_collection.find(new Document(query)).filter(NO_ID));
+                return new MCursor(m_collection.find(new MDocument(query)).filter(NO_ID));
             }
         }
 
-        public final MCursor find(Map<String, Object> query, Map<String, Object> fields) throws Exception
+        public final MCursor find(Map<String, ?> query, Map<String, ?> fields) throws Exception
         {
-            return new MCursor(m_collection.find(new Document(query)).filter(new Document(fields)));
+            return new MCursor(m_collection.find(new MDocument(query)).filter(new MDocument(fields)));
         }
 
-        public final MCursor find(Map<String, Object> query, Map<String, Object> fields, boolean with_id) throws Exception
+        public final MCursor find(Map<String, ?> query, Map<String, ?> fields, boolean with_id) throws Exception
         {
-            Document doid = new Document(fields);
+            MDocument doid = new MDocument(fields);
 
             doid.put(ID_FIELD, with_id);
 
-            return new MCursor(m_collection.find(new Document(query)).filter(doid));
+            return new MCursor(m_collection.find(new MDocument(query)).filter(doid));
         }
 
-        public final MCursor query(Map<String, Object> query) throws Exception
+        public final MCursor query(Map<String, ?> query) throws Exception
         {
             return find(query, false);
         }
 
-        public final Map<String, Object> findAndModify(Map<String, Object> query, Map<String, Object> update)
+        public final Map<String, ?> findAndModify(Map<String, ?> query, Map<String, ?> update)
         {
             return update(query, update, false, true);
         }
 
-        public final Map<String, Object> upsert(Map<String, Object> query, Map<String, Object> update)
+        public final Map<String, ?> upsert(Map<String, ?> query, Map<String, ?> update)
         {
             return update(query, update, true, true);
         }
 
-        public final Map<String, Object> create(Map<String, Object> update)
+        public final Map<String, ?> create(Map<String, ?> update)
         {
             insert(update);
 
             return update;
         }
 
-        public final Map<String, Object> update(Map<String, Object> query, Map<String, Object> update, boolean upsert, boolean multi)
+        public final Map<String, ?> update(Map<String, ?> query, Map<String, ?> update, boolean upsert, boolean multi)
         {
             if (multi)
             {
-                m_collection.updateMany(new Document(query), new Document(update), new UpdateOptions().upsert(upsert));
+                m_collection.updateMany(new MDocument(query), new MDocument(update), new UpdateOptions().upsert(upsert));
             }
             else
             {
-                m_collection.updateOne(new Document(query), new Document(update), new UpdateOptions().upsert(upsert));
+                m_collection.updateOne(new MDocument(query), new MDocument(update), new UpdateOptions().upsert(upsert));
             }
             return update;
         }
 
-        public final Map<String, Object> findOne(Map<String, Object> query)
+        public final Map<String, ?> findOne(Map<String, ?> query)
         {
-            FindIterable<Document> iter = m_collection.find(new Document(query)).limit(1).filter(NO_ID);
+            FindIterable<Document> iter = m_collection.find(new MDocument(query)).limit(1).filter(NO_ID);
 
             if (null != iter)
             {
@@ -331,16 +332,16 @@ public final class MongoDB
             return null;
         }
 
-        public final Map<String, Object> update(Map<String, Object> query, Map<String, Object> update)
+        public final Map<String, ?> update(Map<String, ?> query, Map<String, ?> update)
         {
-            m_collection.updateOne(new Document(query), new Document(update));
+            m_collection.updateOne(new MDocument(query), new MDocument(update));
 
             return update;
         }
 
-        public final long update_n(Map<String, Object> query, Map<String, Object> update)
+        public final long update_n(Map<String, ?> query, Map<String, ?> update)
         {
-            return m_collection.updateMany(new Document(query), new Document(update), new UpdateOptions().upsert(false)).getModifiedCount();
+            return m_collection.updateMany(new MDocument(query), new MDocument(update), new UpdateOptions().upsert(false)).getModifiedCount();
         }
 
         public final List<?> distinct(String field)
@@ -356,11 +357,11 @@ public final class MongoDB
             return list;
         }
 
-        public final List<?> distinct(String field, Map<String, Object> query)
+        public final List<?> distinct(String field, Map<String, ?> query)
         {
             final ArrayList<Document> list = new ArrayList<Document>();
 
-            final MongoCursor<Document> curs = m_collection.distinct(field, Document.class).filter(new Document(query)).iterator();
+            final MongoCursor<Document> curs = m_collection.distinct(field, Document.class).filter(new MDocument(query)).iterator();
 
             while (curs.hasNext())
             {
@@ -370,15 +371,15 @@ public final class MongoDB
         }
     }
 
-    public static final class MCursor implements Iterable<Map<String, Object>>, Iterator<Map<String, Object>>
+    public static final class MCursor implements Iterable<Map<String, ?>>, Iterator<Map<String, ?>>
     {
         private final FindIterable<Document> m_finder;
 
         private final MongoCursor<Document>  m_cursor;
 
-        private boolean                      m_closed    = false;
+        private boolean                       m_closed    = false;
 
-        private boolean                      m_autoclose = true;
+        private boolean                       m_autoclose = true;
 
         protected MCursor(FindIterable<Document> finder)
         {
@@ -405,7 +406,7 @@ public final class MongoDB
         }
 
         @Override
-        public Iterator<Map<String, Object>> iterator()
+        public Iterator<Map<String, ?>> iterator()
         {
             return this;
         }
@@ -430,7 +431,7 @@ public final class MongoDB
         }
 
         @Override
-        public Map<String, Object> next()
+        public Map<String, ?> next()
         {
             Document mdbo = m_cursor.next();
 
@@ -457,9 +458,25 @@ public final class MongoDB
             return new MCursor(m_finder.limit(limit));
         }
 
-        public MCursor sort(Map<String, Object> sort)
+        public MCursor sort(Map<String, ?> sort)
         {
-            return new MCursor(m_finder.sort(new Document(sort)));
+            return new MCursor(m_finder.sort(new MDocument(sort)));
+        }
+    }
+
+    private static final class MDocument extends Document
+    {
+        private static final long serialVersionUID = -3704882524991565448L;
+
+        @SuppressWarnings("unchecked")
+        public static final Map<String, Object> cast(final Map<String, ?> map)
+        {
+            return ((Map<String, Object>) map);
+        }
+
+        public MDocument(final Map<String, ?> map)
+        {
+            super(cast(map));
         }
     }
 }
