@@ -469,14 +469,9 @@ public final class MongoDB
         private static final long serialVersionUID = -3704882524991565448L;
 
         @SuppressWarnings("unchecked")
-        public static final Map<String, Object> cast(final Map<String, ?> map)
-        {
-            return ((Map<String, Object>) map);
-        }
-
         public MDocument(final Map<String, ?> map)
         {
-            super(cast(map));
+            super((Map<String, Object>) map);
         }
     }
 }
