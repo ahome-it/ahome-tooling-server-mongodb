@@ -85,9 +85,9 @@ public final class MongoDB
         }
     }
 
-    public Iterable<String> getDatabaseNames()
+    public List<String> getDatabaseNames()
     {
-        return m_mongo.listDatabaseNames();
+        return m_mongo.listDatabaseNames().into(new ArrayList<String>());
     }
 
     public final MDatabase db(String name) throws Exception
@@ -136,9 +136,9 @@ public final class MongoDB
             return false;
         }
 
-        public final Iterable<String> getCollectionNames()
+        public final List<String> getCollectionNames()
         {
-            return m_db.listCollectionNames();
+            return m_db.listCollectionNames().into(new ArrayList<String>());
         }
 
         public final MCollection collection(String name) throws Exception
@@ -149,7 +149,7 @@ public final class MongoDB
 
     public static final class MCollection
     {
-        private static final MDocument           NO_ID = new MDocument(new Document().append(ID_FIELD, false));
+        private static final MDocument          NO_ID = new MDocument(new Document().append(ID_FIELD, false));
 
         private final MongoCollection<Document> m_collection;
 
@@ -377,9 +377,9 @@ public final class MongoDB
 
         private final MongoCursor<Document>  m_cursor;
 
-        private boolean                       m_closed    = false;
+        private boolean                      m_closed    = false;
 
-        private boolean                       m_autoclose = true;
+        private boolean                      m_autoclose = true;
 
         protected MCursor(FindIterable<Document> finder)
         {
