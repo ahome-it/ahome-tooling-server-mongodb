@@ -346,28 +346,12 @@ public final class MongoDB
 
         public final List<?> distinct(String field)
         {
-            final ArrayList<Document> list = new ArrayList<Document>();
-
-            final MongoCursor<Document> curs = m_collection.distinct(field, Document.class).iterator();
-
-            while (curs.hasNext())
-            {
-                list.add(curs.next());
-            }
-            return list;
+            return m_collection.distinct(field, Document.class).into(new ArrayList<Document>());
         }
 
         public final List<?> distinct(String field, Map<String, ?> query)
         {
-            final ArrayList<Document> list = new ArrayList<Document>();
-
-            final MongoCursor<Document> curs = m_collection.distinct(field, Document.class).filter(new MDocument(query)).iterator();
-
-            while (curs.hasNext())
-            {
-                list.add(curs.next());
-            }
-            return list;
+            return m_collection.distinct(field, Document.class).filter(new MDocument(query)).into(new ArrayList<Document>());
         }
     }
 
@@ -433,13 +417,7 @@ public final class MongoDB
         @Override
         public Map<String, ?> next()
         {
-            Document mdbo = m_cursor.next();
-
-            if (null == mdbo)
-            {
-                return null;
-            }
-            return mdbo;
+            return m_cursor.next();
         }
 
         @Override

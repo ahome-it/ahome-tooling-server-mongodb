@@ -25,25 +25,17 @@ import com.ait.tooling.server.core.security.IAuthorizationProvider;
 import com.ait.tooling.server.core.support.spring.ICommandRegistry;
 import com.ait.tooling.server.core.support.spring.IPropertiesProvider;
 import com.ait.tooling.server.core.support.spring.IServerContext;
-import com.ait.tooling.server.core.support.spring.IServerContextModule;
 import com.ait.tooling.server.core.support.spring.ServerContext;
 
-public final class MongoDBContext implements IMongoDBContext, IMongoDBContextModule
+public final class MongoDBContext implements IMongoDBContext
 {
-    private static final MongoDBContext INSTANCE  = new MongoDBContext();
-
-    public final static String          MODULE_ID = "Server.MongoDB";
-
-    static
-    {
-        ServerContext.addModule(INSTANCE);
-    }
+    private static final MongoDBContext INSTANCE = new MongoDBContext();
 
     public static final MongoDBContext get()
     {
         return INSTANCE;
     }
-    
+
     @Override
     public IMongoDBProvider getMongoDBProvider()
     {
@@ -120,29 +112,5 @@ public final class MongoDBContext implements IMongoDBContext, IMongoDBContextMod
     public IServerManager getServerManager()
     {
         return getServerContext().getServerManager();
-    }
-
-    @Override
-    public IServerContextModule<? extends IServerContext> getModule(String id)
-    {
-        return getServerContext().getModule(id);
-    }
-
-    @Override
-    public <T extends IServerContext> T getModuleContext(String id, Class<T> type)
-    {
-        return getServerContext().getModuleContext(id, type);
-    }
-
-    @Override
-    public IMongoDBContext getModuleContext()
-    {
-        return this;
-    }
-
-    @Override
-    public String getID()
-    {
-        return MODULE_ID;
     }
 }
