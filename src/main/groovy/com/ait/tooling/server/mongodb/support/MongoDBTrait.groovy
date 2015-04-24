@@ -29,7 +29,7 @@ import com.ait.tooling.server.mongodb.MongoDB.MCollection
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
 
 @CompileStatic
-public class MongoDBGroovySupport extends CoreGroovySupport
+public trait MongoDBTrait
 {
     @Memoized
     public IMongoDBContext getMongoDBContext()
