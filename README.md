@@ -5,6 +5,25 @@ Ahome Tooling Server MongoDB is a package containing basic server MongoDB suppor
 
 https://github.com/ahome-it/ahome-tooling-server-mongodb
 
+Downloading artifacts
+
+SNAPSHOT:
+
+```xml
+<repositories>
+  <repository>
+  <id>sonatype</id>
+  <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+  </repository>
+</repositories>
+
+<dependency>
+  <groupId>com.ahome-it</groupId>
+  <artifactId>ahome-tooling-server-mongodb</artifactId>
+  <version>1.0.8-SNAPSHOT</version>
+</dependency>
+```
+
 License
 
 Ahome Tooling Common is released under version 2.0 of the Apache License.
