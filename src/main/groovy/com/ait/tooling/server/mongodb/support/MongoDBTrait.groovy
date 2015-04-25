@@ -20,13 +20,12 @@ import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
 import com.ait.tooling.common.api.java.util.StringOps
-import com.ait.tooling.server.core.support.CoreGroovySupport
-import com.ait.tooling.server.mongodb.IMongoDBContext
-import com.ait.tooling.server.mongodb.IMongoDBProvider
 import com.ait.tooling.server.mongodb.MongoDB
-import com.ait.tooling.server.mongodb.MongoDBContext
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
+import com.ait.tooling.server.mongodb.support.spring.IMongoDBContext
+import com.ait.tooling.server.mongodb.support.spring.IMongoDBProvider
+import com.ait.tooling.server.mongodb.support.spring.MongoDBContextInstance
 
 @CompileStatic
 public trait MongoDBTrait
@@ -34,7 +33,7 @@ public trait MongoDBTrait
     @Memoized
     public IMongoDBContext getMongoDBContext()
     {
-        MongoDBContext.get()
+        MongoDBContextInstance.get()
     }
 
     @Memoized

@@ -14,12 +14,13 @@
    limitations under the License.
  */
 
-package com.ait.tooling.server.mongodb;
+package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.IOException;
 import java.util.Objects;
 
 import com.ait.tooling.common.api.java.util.StringOps;
+import com.ait.tooling.server.mongodb.MongoDB;
 import com.mongodb.MongoClientOptions;
 
 public class MongoDBDescriptor implements IMongoDBDescriptor

@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package com.ait.tooling.server.mongodbrpc.commands
+package com.ait.tooling.server.mongodb.rpc.commands
 
 import groovy.transform.CompileStatic
 

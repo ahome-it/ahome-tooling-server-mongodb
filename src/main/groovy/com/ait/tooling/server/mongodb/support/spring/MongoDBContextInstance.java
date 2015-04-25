@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package com.ait.tooling.server.mongodb;
+package com.ait.tooling.server.mongodb.support.spring;
 
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.WebApplicationContext;
@@ -25,15 +25,19 @@ import com.ait.tooling.server.core.security.IAuthorizationProvider;
 import com.ait.tooling.server.core.support.spring.ICommandRegistry;
 import com.ait.tooling.server.core.support.spring.IPropertiesProvider;
 import com.ait.tooling.server.core.support.spring.IServerContext;
-import com.ait.tooling.server.core.support.spring.ServerContext;
+import com.ait.tooling.server.core.support.spring.ServerContextInstance;
 
-public final class MongoDBContext implements IMongoDBContext
+public final class MongoDBContextInstance implements IMongoDBContext
 {
-    private static final MongoDBContext INSTANCE = new MongoDBContext();
+    private static final MongoDBContextInstance INSTANCE = new MongoDBContextInstance();
 
-    public static final MongoDBContext get()
+    public static final MongoDBContextInstance get()
     {
         return INSTANCE;
+    }
+    
+    private MongoDBContextInstance()
+    {
     }
 
     @Override
@@ -45,7 +49,7 @@ public final class MongoDBContext implements IMongoDBContext
     @Override
     public IServerContext getServerContext()
     {
-        return ServerContext.get();
+        return ServerContextInstance.get();
     }
 
     @Override

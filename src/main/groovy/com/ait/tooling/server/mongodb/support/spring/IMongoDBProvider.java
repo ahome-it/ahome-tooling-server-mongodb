@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package com.ait.tooling.server.mongodb;
+package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.Closeable;
 import java.util.Collection;

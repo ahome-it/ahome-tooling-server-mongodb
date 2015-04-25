@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package com.ait.tooling.server.mongodb;
+package com.ait.tooling.server.mongodb.support.spring;
 
 import com.ait.tooling.server.core.support.spring.IServerContext;
 

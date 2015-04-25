@@ -14,11 +14,12 @@
    limitations under the License.
  */
 
-package com.ait.tooling.server.mongodb;
+package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.Closeable;
 
 import com.ait.tooling.common.api.types.INamed;
+import com.ait.tooling.server.mongodb.MongoDB;
 
 public interface IMongoDBDescriptor extends Closeable, INamed
 {
