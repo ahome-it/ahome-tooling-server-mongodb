@@ -20,9 +20,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.ait.tooling.server.core.jmx.management.IServerManager;
-import com.ait.tooling.server.core.rpc.IJSONCommand;
 import com.ait.tooling.server.core.security.IAuthorizationProvider;
-import com.ait.tooling.server.core.support.spring.ICommandRegistry;
 import com.ait.tooling.server.core.support.spring.IPropertiesProvider;
 import com.ait.tooling.server.core.support.spring.IServerContext;
 import com.ait.tooling.server.core.support.spring.ServerContextInstance;
@@ -68,18 +66,6 @@ public final class MongoDBContextInstance implements IMongoDBContext
     public <T> T getBean(String name, Class<T> type)
     {
         return getServerContext().getBean(name, type);
-    }
-
-    @Override
-    public ICommandRegistry getCommandRegistry()
-    {
-        return getServerContext().getCommandRegistry();
-    }
-
-    @Override
-    public IJSONCommand getCommand(String name)
-    {
-        return getServerContext().getCommand(name);
     }
 
     @Override
