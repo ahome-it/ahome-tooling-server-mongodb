@@ -28,9 +28,5 @@
 						http://www.springframework.org/schema/task/spring-task.xsd">
 						
 	<bean id="MongoDBProvider" class="com.ait.tooling.server.mongodb.support.spring.MongoDBProvider" destroy-method="close" />
-	
-	<context:component-scan base-package="com.ait.tooling.server.mongodb.rpc.commands" />
-							        
-	<context:mbean-export />
 
 </beans>
