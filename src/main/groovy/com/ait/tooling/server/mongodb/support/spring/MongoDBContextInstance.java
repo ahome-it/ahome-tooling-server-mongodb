@@ -21,7 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.ait.tooling.server.core.jmx.management.IServerManager;
 import com.ait.tooling.server.core.security.IAuthorizationProvider;
-import com.ait.tooling.server.core.support.spring.IPropertiesProvider;
+import com.ait.tooling.server.core.support.spring.IExecutorServiceDescriptorProvider;
 import com.ait.tooling.server.core.support.spring.IServerContext;
 import com.ait.tooling.server.core.support.spring.ServerContextInstance;
 
@@ -69,12 +69,6 @@ public final class MongoDBContextInstance implements IMongoDBContext
     }
 
     @Override
-    public IPropertiesProvider getPropertiesProvider()
-    {
-        return getServerContext().getPropertiesProvider();
-    }
-
-    @Override
     public String getPropertyByName(String name)
     {
         return getServerContext().getPropertyByName(name);
@@ -102,5 +96,11 @@ public final class MongoDBContextInstance implements IMongoDBContext
     public IServerManager getServerManager()
     {
         return getServerContext().getServerManager();
+    }
+    
+    @Override
+    public IExecutorServiceDescriptorProvider getExecutorServiceDescriptorProvider()
+    {
+        return getServerContext().getExecutorServiceDescriptorProvider();
     }
 }
