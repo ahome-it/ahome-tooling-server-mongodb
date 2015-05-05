@@ -18,13 +18,11 @@ package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.Closeable;
 
-import com.ait.tooling.common.api.types.INamed;
+import com.ait.tooling.common.api.types.INamedDefinition;
 import com.ait.tooling.server.mongodb.MongoDB;
 
-public interface IMongoDBDescriptor extends Closeable, INamed
+public interface IMongoDBDescriptor extends Closeable, INamedDefinition
 {
-    public void setName(String name);
-
     public MongoDB getMongoDB();
 
     public int getConnectionTimeout();
