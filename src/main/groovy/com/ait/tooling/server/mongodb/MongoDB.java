@@ -16,6 +16,8 @@
 
 package com.ait.tooling.server.mongodb;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +38,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.UpdateOptions;
 
 public final class MongoDB
@@ -52,7 +55,7 @@ public final class MongoDB
     {
         m_defaultdb = defaultdb;
 
-        BSON.addEncodingHook(java.math.BigDecimal.class, new Transformer()
+        BSON.addEncodingHook(BigDecimal.class, new Transformer()
         {
             @Override
             public Object transform(Object object)
@@ -60,7 +63,7 @@ public final class MongoDB
                 return JSONUtils.asDouble(object);
             }
         });
-        BSON.addEncodingHook(java.math.BigInteger.class, new Transformer()
+        BSON.addEncodingHook(BigInteger.class, new Transformer()
         {
             @Override
             public Object transform(Object object)
@@ -149,8 +152,6 @@ public final class MongoDB
 
     public static final class MCollection
     {
-        private static final MDocument          NO_ID = new MDocument(new Document().append(ID_FIELD, false));
-
         private final MongoCollection<Document> m_collection;
 
         protected MCollection(MongoCollection<Document> collection)
@@ -251,7 +252,7 @@ public final class MongoDB
             }
             else
             {
-                return new MCursor(m_collection.find().filter(NO_ID));
+                return new MCursor(m_collection.find().projection(Projections.excludeId()));
             }
         }
 
@@ -268,22 +269,25 @@ public final class MongoDB
             }
             else
             {
-                return new MCursor(m_collection.find(new MDocument(query)).filter(NO_ID));
+                return new MCursor(m_collection.find(new MDocument(query)).projection(Projections.excludeId()));
             }
         }
 
         public final MCursor find(Map<String, ?> query, Map<String, ?> fields) throws Exception
         {
-            return new MCursor(m_collection.find(new MDocument(query)).filter(new MDocument(fields)));
+            return new MCursor(m_collection.find(new MDocument(query)).projection(new MDocument(fields)));
         }
 
         public final MCursor find(Map<String, ?> query, Map<String, ?> fields, boolean with_id) throws Exception
         {
-            MDocument doid = new MDocument(fields);
-
-            doid.put(ID_FIELD, with_id);
-
-            return new MCursor(m_collection.find(new MDocument(query)).filter(doid));
+            if (with_id)
+            {
+                return new MCursor(m_collection.find(new MDocument(query)).projection(new MDocument(fields)));
+            }
+            else
+            {
+                return new MCursor(m_collection.find(new MDocument(query)).projection(new MDocument(fields)).projection(Projections.excludeId()));
+            }
         }
 
         public final MCursor query(Map<String, ?> query) throws Exception
@@ -323,7 +327,7 @@ public final class MongoDB
 
         public final Map<String, ?> findOne(Map<String, ?> query)
         {
-            FindIterable<Document> iter = m_collection.find(new MDocument(query)).limit(1).filter(NO_ID);
+            FindIterable<Document> iter = m_collection.find(new MDocument(query)).limit(1).projection(Projections.excludeId());
 
             if (null != iter)
             {
