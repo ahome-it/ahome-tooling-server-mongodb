@@ -43,17 +43,15 @@ import com.mongodb.client.model.UpdateOptions;
 
 public final class MongoDB
 {
-    private static final Logger logger   = Logger.getLogger(MongoDB.class);
+    private static final Logger logger = Logger.getLogger(MongoDB.class);
 
-    public static final String  ID_FIELD = "_id";
+    private final MongoClient   m_mongo;
 
-    private MongoClient         m_mongo;
+    private final String        m_usedb;
 
-    private final String        m_defaultdb;
-
-    public MongoDB(MongoClientOptions options, String host, int port, String defaultdb)
+    public MongoDB(MongoClientOptions options, String host, int port, String usedb)
     {
-        m_defaultdb = defaultdb;
+        m_usedb = usedb;
 
         BSON.addEncodingHook(BigDecimal.class, new Transformer()
         {
@@ -100,7 +98,7 @@ public final class MongoDB
 
     public final MDatabase db() throws Exception
     {
-        return db(m_defaultdb, false);
+        return db(m_usedb, false);
     }
 
     public final MDatabase db(String name, boolean auth) throws Exception
@@ -236,7 +234,7 @@ public final class MongoDB
 
         public final MCursor find() throws Exception
         {
-            return new MCursor(m_collection.find());
+            return find(false);
         }
 
         final String getNameSpace()
@@ -258,7 +256,7 @@ public final class MongoDB
 
         public final MCursor find(Map<String, ?> query) throws Exception
         {
-            return new MCursor(m_collection.find(new MDocument(query)));
+            return find(query, false);
         }
 
         public final MCursor find(Map<String, ?> query, boolean with_id) throws Exception
@@ -275,7 +273,7 @@ public final class MongoDB
 
         public final MCursor find(Map<String, ?> query, Map<String, ?> fields) throws Exception
         {
-            return new MCursor(m_collection.find(new MDocument(query)).projection(new MDocument(fields)));
+            return find(query, fields, false);
         }
 
         public final MCursor find(Map<String, ?> query, Map<String, ?> fields, boolean with_id) throws Exception
