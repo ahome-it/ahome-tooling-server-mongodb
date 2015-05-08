@@ -28,15 +28,26 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.ait.tooling.common.api.java.util.StringOps;
+
 @ManagedResource(objectName = "com.ait.tooling.server.mongodb:name=MongoDBProvider", description = "Manage MongoDB Descriptors.")
 public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
 {
     private static final Logger                       logger        = Logger.getLogger(MongoDBProvider.class);
 
+    private final String                              m_descriptor;
+
     private final HashMap<String, IMongoDBDescriptor> m_descriptors = new HashMap<String, IMongoDBDescriptor>();
 
-    public MongoDBProvider()
+    public MongoDBProvider(final String descriptor)
     {
+        m_descriptor = StringOps.requireTrimOrNull(descriptor);
+    }
+
+    @Override
+    public String getDefaultMongoDBDescriptorName()
+    {
+        return m_descriptor;
     }
 
     @Override

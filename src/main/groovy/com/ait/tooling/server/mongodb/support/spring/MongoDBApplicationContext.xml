@@ -27,6 +27,8 @@
 						http://www.springframework.org/schema/task
 						http://www.springframework.org/schema/task/spring-task.xsd">
 						
-	<bean id="MongoDBProvider" class="com.ait.tooling.server.mongodb.support.spring.MongoDBProvider" destroy-method="close" />
+	<bean id="MongoDBProvider" class="com.ait.tooling.server.mongodb.support.spring.MongoDBProvider" destroy-method="close">
+		<constructor-arg value="${mongodbprovider.default.name}" />
+	</bean>
 
 </beans>

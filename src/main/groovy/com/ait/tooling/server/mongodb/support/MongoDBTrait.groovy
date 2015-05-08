@@ -17,8 +17,10 @@ import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
 import com.ait.tooling.common.api.java.util.StringOps
+import com.ait.tooling.json.JSONObject
 import com.ait.tooling.server.mongodb.MongoDB
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
+import com.ait.tooling.server.mongodb.MongoDB.MCursor
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
 import com.ait.tooling.server.mongodb.support.spring.IMongoDBContext
 import com.ait.tooling.server.mongodb.support.spring.IMongoDBProvider
@@ -60,13 +62,30 @@ public trait MongoDBTrait
     @Memoized
     public MongoDB getMongoDB()
     {
-        getMongoDB('DefaultMongoDB')
+        getMongoDB(getDefaultMongoDBDescriptorName())
     }
 
     @Memoized
     public MongoDB getMongoDB(String name)
     {
         getMongoDBProvider().getMongoDBDescriptor(StringOps.requireTrimOrNull(name)).getMongoDB()
+    }
+    
+    @Memoized
+    public String getDefaultMongoDBDescriptorName()
+    {
+        getMongoDBProvider().getDefaultMongoDBDescriptorName()
+    }
+    
+    public JSONObject json(MCursor cursor)
+    {
+        List list = []
+        
+        for (Map map: cursor)
+        {
+            list << map
+        }
+        new JSONObject(list)
     }
 
     public Map IN(Map object, String name)

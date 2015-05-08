@@ -26,4 +26,6 @@ public interface IMongoDBProvider extends Closeable
     public Collection<String> keys();
 
     public Collection<IMongoDBDescriptor> values();
+    
+    public String getDefaultMongoDBDescriptorName();
 }
