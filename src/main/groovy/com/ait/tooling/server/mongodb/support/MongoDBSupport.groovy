@@ -16,13 +16,12 @@
 
 package com.ait.tooling.server.mongodb.support
 
-import java.util.Map;
-
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
 import com.ait.tooling.common.api.java.util.StringOps
 import com.ait.tooling.json.JSONObject
+import com.ait.tooling.server.core.support.CoreGroovySupport
 import com.ait.tooling.server.mongodb.MongoDB
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
 import com.ait.tooling.server.mongodb.MongoDB.MCursor
@@ -35,7 +34,7 @@ import com.ait.tooling.server.mongodb.support.spring.IMongoDBProvider
 import com.ait.tooling.server.mongodb.support.spring.MongoDBContextInstance
 
 @CompileStatic
-public class MongoDBOp
+public class MongoDBSupport extends CoreGroovySupport
 {
     @Memoized
     public IMongoDBContext getMongoDBContext()
