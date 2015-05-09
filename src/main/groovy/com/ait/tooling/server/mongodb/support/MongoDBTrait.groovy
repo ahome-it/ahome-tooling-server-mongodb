@@ -21,7 +21,6 @@ import groovy.transform.Memoized
 
 import com.ait.tooling.common.api.java.util.StringOps
 import com.ait.tooling.json.JSONObject
-import com.ait.tooling.server.core.support.CoreGroovyTrait
 import com.ait.tooling.server.mongodb.MongoDB
 import com.ait.tooling.server.mongodb.MongoDB.IMCursor
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
@@ -34,7 +33,7 @@ import com.ait.tooling.server.mongodb.support.spring.IMongoDBProvider
 import com.ait.tooling.server.mongodb.support.spring.MongoDBContextInstance
 
 @CompileStatic
-public trait MongoDBTrait extends CoreGroovyTrait
+public trait MongoDBTrait 
 {
     @Memoized
     public IMongoDBContext getMongoDBContext()
