@@ -23,9 +23,7 @@ public interface IMongoDBProvider extends Closeable
 {
     public IMongoDBDescriptor getMongoDBDescriptor(String name);
 
-    public Collection<String> keys();
+    public Collection<String> getMongoDBDescriptorNames();
 
-    public Collection<IMongoDBDescriptor> values();
-    
     public String getDefaultMongoDBDescriptorName();
 }

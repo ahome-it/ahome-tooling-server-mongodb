@@ -18,6 +18,7 @@ package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -51,9 +52,9 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
     }
 
     @Override
-    public IMongoDBDescriptor getMongoDBDescriptor(String name)
+    public IMongoDBDescriptor getMongoDBDescriptor(final String name)
     {
-        if ((null != name) && (false == (name = name.trim()).isEmpty()))
+        if (null != name)
         {
             return m_descriptors.get(name);
         }
@@ -61,22 +62,16 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
     }
 
     @Override
-    public Collection<String> keys()
+    public Collection<String> getMongoDBDescriptorNames()
     {
-        return m_descriptors.keySet();
-    }
-
-    @Override
-    public Collection<IMongoDBDescriptor> values()
-    {
-        return m_descriptors.values();
+        return Collections.unmodifiableCollection(m_descriptors.keySet());
     }
 
     @Override
     @ManagedOperation(description = "Close all MongoDB Descriptors")
     public void close() throws IOException
     {
-        for (IMongoDBDescriptor descriptor : values())
+        for (IMongoDBDescriptor descriptor : m_descriptors.values())
         {
             try
             {
@@ -92,25 +87,19 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
     }
 
     @Override
-    public void setBeanFactory(BeanFactory factory) throws BeansException
+    public void setBeanFactory(final BeanFactory factory) throws BeansException
     {
         if (factory instanceof DefaultListableBeanFactory)
         {
             for (String name : ((DefaultListableBeanFactory) factory).getBeansOfType(IMongoDBDescriptor.class).keySet())
             {
-                if ((null != name) && (false == (name = name.trim()).isEmpty()))
-                {
-                    IMongoDBDescriptor descriptor = factory.getBean(name, IMongoDBDescriptor.class);
+                final IMongoDBDescriptor descriptor = factory.getBean(name, IMongoDBDescriptor.class);
 
-                    if (null != descriptor)
-                    {
-                        descriptor.setName(name);
+                descriptor.setName(name);
 
-                        logger.info("Found IMongoDBDescriptor(" + name + ") class " + descriptor.getClass().getName());
+                logger.info("Found IMongoDBDescriptor(" + name + ") class " + descriptor.getClass().getName());
 
-                        m_descriptors.put(name, descriptor);
-                    }
-                }
+                m_descriptors.put(name, descriptor);
             }
         }
     }

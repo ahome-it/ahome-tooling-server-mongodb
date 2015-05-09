@@ -25,30 +25,39 @@ import com.mongodb.MongoClientOptions;
 
 public class MongoDBDescriptor implements IMongoDBDescriptor
 {
-    private String  m_name;
+    private String       m_name;
 
-    private MongoDB m_modb;
+    private MongoDB      m_modb;
 
-    private String  m_mongohost = "localhost";
+    private boolean      m_id        = false;
 
-    private int     m_mongoport = 27017;
+    private String       m_mongohost = "localhost";
 
-    private int     m_poolsize  = 100;
+    private int          m_mongoport = 27017;
 
-    private int     m_multiple  = 100;
+    private int          m_poolsize  = 100;
 
-    private int     m_ctimeout  = 10000;
+    private int          m_multiple  = 100;
 
-    private String  m_defaultd  = "test";
+    private int          m_ctimeout  = 10000;
 
-    public MongoDBDescriptor(String defaultd)
+    private final String m_defaultd;
+
+    public MongoDBDescriptor(final String defaultd)
     {
-        defaultd = StringOps.toTrimOrNull(defaultd);
+        m_defaultd = StringOps.requireTrimOrNull(defaultd);
+    }
 
-        if (defaultd != null)
-        {
-            m_defaultd = defaultd;
-        }
+    @Override
+    public boolean isAddingID()
+    {
+        return m_id;
+    }
+
+    @Override
+    public void setAddingID(final boolean id)
+    {
+        m_id = id;
     }
 
     @Override
@@ -67,9 +76,9 @@ public class MongoDBDescriptor implements IMongoDBDescriptor
     }
 
     @Override
-    public void setName(String name)
+    public void setName(final String name)
     {
-        m_name = Objects.requireNonNull(name, "MongoDBDescriptor name is null");
+        m_name = Objects.requireNonNull(StringOps.toTrimOrNull(name), "MongoDBDescriptor name is null or empty");
     }
 
     @Override
@@ -77,9 +86,11 @@ public class MongoDBDescriptor implements IMongoDBDescriptor
     {
         if (null == m_modb)
         {
-            MongoClientOptions opts = MongoClientOptions.builder().connectionsPerHost(getConnectionPoolSize()).threadsAllowedToBlockForConnectionMultiplier(getConnectionMultiplier()).connectTimeout(getConnectionTimeout()).build();
+            final MongoClientOptions opts = MongoClientOptions.builder().connectionsPerHost(getConnectionPoolSize()).threadsAllowedToBlockForConnectionMultiplier(getConnectionMultiplier()).connectTimeout(getConnectionTimeout()).build();
 
             m_modb = new MongoDB(opts, getHost(), getPort(), getDefaultDB());
+
+            m_modb.setAddingID(isAddingID());
         }
         return m_modb;
     }
@@ -103,21 +114,21 @@ public class MongoDBDescriptor implements IMongoDBDescriptor
     }
 
     @Override
-    public void setConnectionTimeout(int timeout)
+    public void setConnectionTimeout(final int timeout)
     {
-        m_ctimeout = timeout;
+        m_ctimeout = Math.max(0, timeout);
     }
 
     @Override
-    public void setConnectionMultiplier(int multiplier)
+    public void setConnectionMultiplier(final int multiplier)
     {
-        m_multiple = multiplier;
+        m_multiple = Math.max(0, multiplier);
     }
 
     @Override
-    public void setConnectionPoolSize(int poolsize)
+    public void setConnectionPoolSize(final int poolsize)
     {
-        m_poolsize = poolsize;
+        m_poolsize = Math.max(1, poolsize);
     }
 
     @Override
@@ -144,9 +155,9 @@ public class MongoDBDescriptor implements IMongoDBDescriptor
     }
 
     @Override
-    public void setPort(int port)
+    public void setPort(final int port)
     {
-        m_mongoport = port;
+        m_mongoport = Math.max(1024 + 1, port);
     }
 
     @Override

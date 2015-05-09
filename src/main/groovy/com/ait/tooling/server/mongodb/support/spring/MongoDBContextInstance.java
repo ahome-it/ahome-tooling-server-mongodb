@@ -16,9 +16,12 @@
 
 package com.ait.tooling.server.mongodb.support.spring;
 
+import java.util.Objects;
+
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.ait.tooling.common.api.java.util.StringOps;
 import com.ait.tooling.server.core.jmx.management.IServerManager;
 import com.ait.tooling.server.core.security.IAuthorizationProvider;
 import com.ait.tooling.server.core.support.spring.IExecutorServiceDescriptorProvider;
@@ -33,7 +36,7 @@ public final class MongoDBContextInstance implements IMongoDBContext
     {
         return INSTANCE;
     }
-    
+
     private MongoDBContextInstance()
     {
     }
@@ -63,21 +66,21 @@ public final class MongoDBContextInstance implements IMongoDBContext
     }
 
     @Override
-    public <T> T getBean(String name, Class<T> type)
+    public <T> T getBean(final String name, final Class<T> type)
     {
-        return getServerContext().getBean(name, type);
+        return getServerContext().getBean(StringOps.requireTrimOrNull(name), Objects.requireNonNull(type));
     }
 
     @Override
-    public String getPropertyByName(String name)
+    public String getPropertyByName(final String name)
     {
-        return getServerContext().getPropertyByName(name);
+        return getServerContext().getPropertyByName(StringOps.requireTrimOrNull(name));
     }
 
     @Override
-    public String getPropertyByName(String name, String otherwise)
+    public String getPropertyByName(final String name, final String otherwise)
     {
-        return getServerContext().getPropertyByName(name, otherwise);
+        return getServerContext().getPropertyByName(StringOps.requireTrimOrNull(name), otherwise);
     }
 
     @Override
@@ -97,7 +100,7 @@ public final class MongoDBContextInstance implements IMongoDBContext
     {
         return getServerContext().getServerManager();
     }
-    
+
     @Override
     public IExecutorServiceDescriptorProvider getExecutorServiceDescriptorProvider()
     {

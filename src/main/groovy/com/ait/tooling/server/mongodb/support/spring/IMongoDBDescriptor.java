@@ -46,4 +46,8 @@ public interface IMongoDBDescriptor extends Closeable, INamedDefinition
     public void setPort(int port);
 
     public String getDefaultDB();
+    
+    public boolean isAddingID();
+    
+    public void setAddingID(boolean id);
 }

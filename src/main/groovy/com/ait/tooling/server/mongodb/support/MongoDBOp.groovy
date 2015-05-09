@@ -16,6 +16,8 @@
 
 package com.ait.tooling.server.mongodb.support
 
+import java.util.Map;
+
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
@@ -33,7 +35,7 @@ import com.ait.tooling.server.mongodb.support.spring.IMongoDBProvider
 import com.ait.tooling.server.mongodb.support.spring.MongoDBContextInstance
 
 @CompileStatic
-public trait MongoDBTrait
+public class MongoDBOp
 {
     @Memoized
     public IMongoDBContext getMongoDBContext()
