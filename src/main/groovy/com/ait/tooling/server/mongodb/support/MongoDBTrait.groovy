@@ -23,8 +23,8 @@ import com.ait.tooling.common.api.java.util.StringOps
 import com.ait.tooling.json.JSONObject
 import com.ait.tooling.server.core.support.CoreGroovyTrait
 import com.ait.tooling.server.mongodb.MongoDB
+import com.ait.tooling.server.mongodb.MongoDB.IMCursor
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
-import com.ait.tooling.server.mongodb.MongoDB.MCursor
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
 import com.ait.tooling.server.mongodb.MongoDB.MProjection
 import com.ait.tooling.server.mongodb.MongoDB.MQuery
@@ -84,7 +84,7 @@ public trait MongoDBTrait extends CoreGroovyTrait
         getMongoDBProvider().getDefaultMongoDBDescriptorName()
     }
 
-    public JSONObject json(MCursor cursor)
+    public JSONObject json(IMCursor cursor)
     {
         List list = []
 
