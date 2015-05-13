@@ -17,9 +17,10 @@
 package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
@@ -34,11 +35,11 @@ import com.ait.tooling.common.api.java.util.StringOps;
 @ManagedResource(objectName = "com.ait.tooling.server.mongodb:name=MongoDBProvider", description = "Manage MongoDB Descriptors.")
 public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
 {
-    private static final Logger                       logger        = Logger.getLogger(MongoDBProvider.class);
+    private static final Logger                             logger        = Logger.getLogger(MongoDBProvider.class);
 
-    private final String                              m_descriptor;
+    private final String                                    m_descriptor;
 
-    private final HashMap<String, IMongoDBDescriptor> m_descriptors = new HashMap<String, IMongoDBDescriptor>();
+    private final LinkedHashMap<String, IMongoDBDescriptor> m_descriptors = new LinkedHashMap<String, IMongoDBDescriptor>();
 
     public MongoDBProvider(final String descriptor)
     {
@@ -62,9 +63,9 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
     }
 
     @Override
-    public Collection<String> getMongoDBDescriptorNames()
+    public List<String> getMongoDBDescriptorNames()
     {
-        return Collections.unmodifiableCollection(m_descriptors.keySet());
+        return Collections.unmodifiableList(new ArrayList<String>(m_descriptors.keySet()));
     }
 
     @Override

@@ -14,20 +14,113 @@
  limitations under the License.
 */
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath('org.ajoberstar:grgit:1.1.0')
+    }
+}
+
+import org.apache.tools.ant.filters.FixCrLfFilter
+import org.apache.tools.ant.filters.ReplaceTokens
+import java.net.InetAddress
+import org.ajoberstar.grgit.Grgit
+
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 
-version = '1.0.43-SNAPSHOT'
+version = '1.0.47-SNAPSHOT'
 
 group = 'com.ahome-it'
+
+task('deleteConfigs', type: Delete) {
+    FileTree tree = fileTree (dir: 'build/resources/main');
+    tree.each { File file ->
+        delete(file)
+    }
+}
+
+task('filterConfigs', dependsOn: deleteConfigs, type: Copy) {
+    from sourceSets.main.allSource
+    into 'build/resources/main'
+    filter(FixCrLfFilter)
+    filter(ReplaceTokens, tokens: getFilterTokens())
+}
+
+jar.dependsOn(filterConfigs)
 
 jar {
     manifest {
         attributes 'Implementation-Title': 'Ahome-Tooling-Server-MongoDB', 'Implementation-Version': version
     }
-    from sourceSets.main.allSource
+}
+
+def getFilterTokens() {
+    [GRADLE_BUILD_USER: getBuildUser(), GRADLE_BUILD_DATE: getBuildDate(), GRADLE_JAVA_VERSION: getJavaVersion(), GRADLE_GIT_COMMIT_HASH: getBuildGITCommitHash(), GRADLE_GIT_COMMIT_USER: getBuildGITCommitUser(), GRADLE_GIT_COMMIT_MESSAGE: getBuildGITCommitMessage(), GRADLE_BUILD_SERVER_HOST: getBuildServerHost(), GRADLE_BUILD_SERVER_BUILD: getBuildServerBuild(), GRADLE_BUILD_MODULE_VERSION: getBuildModuleVersion()]
+}
+
+def getBuildModuleVersion() {
+    version
+}
+def getBuildDate() {
+    (new Date()).toString()
+}
+
+def getBuildServerHost() {
+    try
+    {
+        InetAddress.getLocalHost().getHostName()
+    }
+    catch (Exception e)
+    {
+        "localhost"
+    }
+}
+
+def getJavaVersion() {
+    String java = System.getProperty('java.version')
+    if (java)
+    {
+        return java
+    }
+    'unknown'
+}
+
+def getBuildUser() {
+    String user = System.getProperty('user.name')
+    if (user)
+    {
+        return user
+    }
+    'unknown'
+}
+
+def getBuildServerBuild() {
+    String name = System.getProperty('BUILD_DISPLAY_NAME')
+    if (name)
+    {
+        return name
+    }
+    'unknown'
+}
+
+def getBuildGITCommitHash() {
+    def grgit = Grgit.open(project.file('.'))
+    grgit.head().id
+}
+
+def getBuildGITCommitUser() {
+    def grgit = Grgit.open(project.file('.'))
+    grgit.head().committer.email
+}
+
+def getBuildGITCommitMessage() {
+    def grgit = Grgit.open(project.file('.'))
+    grgit.head().shortMessage
 }
 
 repositories {
@@ -52,7 +145,7 @@ configurations {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.35-SNAPSHOT')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.40-SNAPSHOT')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.0')
 }
 

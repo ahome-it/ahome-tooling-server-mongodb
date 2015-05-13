@@ -17,13 +17,13 @@
 package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.Closeable;
-import java.util.Collection;
+import java.util.List;
 
 public interface IMongoDBProvider extends Closeable
 {
     public IMongoDBDescriptor getMongoDBDescriptor(String name);
 
-    public Collection<String> getMongoDBDescriptorNames();
+    public List<String> getMongoDBDescriptorNames();
 
     public String getDefaultMongoDBDescriptorName();
 }

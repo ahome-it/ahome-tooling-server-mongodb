@@ -36,6 +36,14 @@ import com.ait.tooling.server.mongodb.support.spring.MongoDBContextInstance
 @CompileStatic
 public class MongoDBSupport extends CoreGroovySupport
 {
+    private static final MongoDBSupport INSTANCE = new MongoDBSupport()
+    
+    @Memoized
+    public static final MongoDBSupport getMongoDBSupport()
+    {
+        INSTANCE
+    }
+    
     @Memoized
     public IMongoDBContext getMongoDBContext()
     {

@@ -24,7 +24,9 @@ import org.springframework.web.context.WebApplicationContext;
 import com.ait.tooling.common.api.java.util.StringOps;
 import com.ait.tooling.server.core.jmx.management.IServerManager;
 import com.ait.tooling.server.core.security.IAuthorizationProvider;
+import com.ait.tooling.server.core.support.spring.IBuildDescriptorProvider;
 import com.ait.tooling.server.core.support.spring.IExecutorServiceDescriptorProvider;
+import com.ait.tooling.server.core.support.spring.IPropertiesResolver;
 import com.ait.tooling.server.core.support.spring.IServerContext;
 import com.ait.tooling.server.core.support.spring.ServerContextInstance;
 
@@ -65,10 +67,9 @@ public final class MongoDBContextInstance implements IMongoDBContext
         return getServerContext().getEnvironment();
     }
 
-    @Override
     public <T> T getBean(final String name, final Class<T> type)
     {
-        return getServerContext().getBean(StringOps.requireTrimOrNull(name), Objects.requireNonNull(type));
+        return getApplicationContext().getBean(StringOps.requireTrimOrNull(name), Objects.requireNonNull(type));
     }
 
     @Override
@@ -105,5 +106,17 @@ public final class MongoDBContextInstance implements IMongoDBContext
     public IExecutorServiceDescriptorProvider getExecutorServiceDescriptorProvider()
     {
         return getServerContext().getExecutorServiceDescriptorProvider();
+    }
+
+    @Override
+    public IBuildDescriptorProvider getBuildDescriptorProvider()
+    {
+        return getServerContext().getBuildDescriptorProvider();
+    }
+
+    @Override
+    public IPropertiesResolver getPropertiesResolver()
+    {
+        return getServerContext().getPropertiesResolver();
     }
 }

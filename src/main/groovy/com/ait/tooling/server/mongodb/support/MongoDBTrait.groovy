@@ -33,7 +33,7 @@ import com.ait.tooling.server.mongodb.support.spring.IMongoDBProvider
 import com.ait.tooling.server.mongodb.support.spring.MongoDBContextInstance
 
 @CompileStatic
-public trait MongoDBTrait 
+public trait MongoDBTrait
 {
     @Memoized
     public IMongoDBContext getMongoDBContext()
@@ -98,27 +98,27 @@ public trait MongoDBTrait
     {
         ['$inc': args]
     }
-    
+
     public Map MUL(Map args)
     {
         ['$mul': args]
     }
-    
+
     public Map RENAME(Map args)
     {
         ['$rename': args]
     }
-    
+
     public Map SET(Map args)
     {
         ['$set': args]
     }
-    
+
     public Map UNSET(Map args)
     {
         ['$unset': args]
     }
-    
+
     public Map MIN(Map args)
     {
         ['$min': args]
