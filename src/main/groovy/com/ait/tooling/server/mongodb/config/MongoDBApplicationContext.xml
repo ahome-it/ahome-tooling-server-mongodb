@@ -27,7 +27,7 @@
 						http://www.springframework.org/schema/task
 						http://www.springframework.org/schema/task/spring-task.xsd">
 						
-	<bean id=MongoDBBuildDescriptor" class="com.ait.tooling.server.core.support.spring.BuildDescriptor">
+	<bean id="MongoDBBuildDescriptor" class="com.ait.tooling.server.core.support.spring.BuildDescriptor">
 		<constructor-arg value="server_mongodb" />
 		<property name="buildUser" value="@GRADLE_BUILD_USER@" />
 		<property name="buildDate" value="@GRADLE_BUILD_DATE@" />

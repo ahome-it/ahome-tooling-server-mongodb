@@ -33,7 +33,7 @@ apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 
-version = '1.0.47-SNAPSHOT'
+version = '1.0.48-SNAPSHOT'
 
 group = 'com.ahome-it'
 
@@ -145,7 +145,7 @@ configurations {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.40-SNAPSHOT')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.41-SNAPSHOT')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.0')
 }
 
