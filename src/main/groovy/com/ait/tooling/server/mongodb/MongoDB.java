@@ -1,17 +1,17 @@
 /*
-   Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ * Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.ait.tooling.server.mongodb;
@@ -268,18 +268,15 @@ public final class MongoDB
         }
 
         @SuppressWarnings("unchecked")
-        private final Map<String, ?> checkID(final Map<String, ?> update)
+        public final Map<String, ?> ensureHasID(final Map<String, ?> update)
         {
-            if (isAddingID())
+            Objects.requireNonNull(update);
+
+            final Object id = update.get("id");
+
+            if ((false == (id instanceof String)) || (null == StringOps.toTrimOrNull(id.toString())))
             {
-                Objects.requireNonNull(update);
-
-                Object id = update.get("id");
-
-                if ((null == id) || (null == StringOps.toTrimOrNull(id.toString())))
-                {
-                    ((Map<String, Object>) update).put("id", (new ObjectId()).toString());
-                }
+                ((Map<String, Object>) update).put("id", (new ObjectId()).toString());
             }
             return update;
         }
@@ -288,7 +285,7 @@ public final class MongoDB
         {
             if (isAddingID())
             {
-                final Map<String, ?> withid = checkID(Objects.requireNonNull(record));
+                final Map<String, ?> withid = ensureHasID(Objects.requireNonNull(record));
 
                 m_collection.insertOne(new MDocument(Objects.requireNonNull(withid)));
 
@@ -324,7 +321,7 @@ public final class MongoDB
             {
                 for (Map<String, ?> lmap : list)
                 {
-                    save.add(new MDocument(checkID(Objects.requireNonNull(lmap))));
+                    save.add(new MDocument(ensureHasID(Objects.requireNonNull(lmap))));
                 }
             }
             else

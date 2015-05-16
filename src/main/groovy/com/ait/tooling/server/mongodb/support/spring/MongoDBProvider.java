@@ -1,17 +1,17 @@
 /*
-   Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ * Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.ait.tooling.server.mongodb.support.spring;
@@ -35,11 +35,13 @@ import com.ait.tooling.common.api.java.util.StringOps;
 @ManagedResource(objectName = "com.ait.tooling.server.mongodb:name=MongoDBProvider", description = "Manage MongoDB Descriptors.")
 public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
 {
-    private static final Logger                             logger        = Logger.getLogger(MongoDBProvider.class);
+    private static final long                               serialVersionUID = 5417970249518001367L;
+
+    private static final Logger                             logger           = Logger.getLogger(MongoDBProvider.class);
 
     private final String                                    m_descriptor;
 
-    private final LinkedHashMap<String, IMongoDBDescriptor> m_descriptors = new LinkedHashMap<String, IMongoDBDescriptor>();
+    private final LinkedHashMap<String, IMongoDBDescriptor> m_descriptors    = new LinkedHashMap<String, IMongoDBDescriptor>();
 
     public MongoDBProvider(final String descriptor)
     {
@@ -66,6 +68,12 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
     public List<String> getMongoDBDescriptorNames()
     {
         return Collections.unmodifiableList(new ArrayList<String>(m_descriptors.keySet()));
+    }
+
+    @Override
+    public List<IMongoDBDescriptor> getMongoDBDescriptors()
+    {
+        return Collections.unmodifiableList(new ArrayList<IMongoDBDescriptor>(m_descriptors.values()));
     }
 
     @Override
