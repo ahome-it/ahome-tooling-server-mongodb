@@ -25,7 +25,7 @@
 						http://www.springframework.org/schema/task/spring-task.xsd">
 
 	<bean id="MongoDBBuildDescriptor" class="com.ait.tooling.server.core.support.spring.BuildDescriptor">
-		<constructor-arg value="server_mongodb"/>
+		<constructor-arg value="@GRADLE_BUILD_PROJECT_TITLE@"/>
 		<property name="buildUser" value="@GRADLE_BUILD_USER@"/>
 		<property name="buildDate" value="@GRADLE_BUILD_DATE@"/>
 		<property name="javaVersion" value="@GRADLE_JAVA_VERSION@"/>
@@ -34,7 +34,7 @@
 		<property name="buildGITCommitMessage" value="@GRADLE_GIT_COMMIT_MESSAGE@"/>
 		<property name="buildServerHost" value="@GRADLE_BUILD_SERVER_HOST@"/>
 		<property name="buildServerBuild" value="@GRADLE_BUILD_SERVER_BUILD@"/>
-		<property name="buildModuleVersion" value="@GRADLE_BUILD_MODULE_VERSION@"/>
+		<property name="buildModuleVersion" value="@GRADLE_BUILD_ARTIFACT_ID@-@GRADLE_BUILD_MODULE_VERSION@.jar"/>
 	</bean>
 
 	<bean id="MongoDBProvider" class="com.ait.tooling.server.mongodb.support.spring.MongoDBProvider" destroy-method="close">

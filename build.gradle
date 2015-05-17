@@ -19,7 +19,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('org.ajoberstar:grgit:1.1.0')
+        classpath(group: 'org.ajoberstar', name: 'grgit', version: '1.2.0')
     }
 }
 
@@ -33,7 +33,7 @@ apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 
-version = '1.0.51-SNAPSHOT'
+version = '1.0.52-SNAPSHOT'
 
 group = 'com.ahome-it'
 
@@ -55,12 +55,20 @@ jar.dependsOn(filterConfigs)
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Ahome-Tooling-Server-MongoDB', 'Implementation-Version': version
+        attributes 'Implementation-Title': getProjectTitle(), 'Implementation-Version': getBuildModuleVersion()
     }
 }
 
 def getFilterTokens() {
-    [GRADLE_BUILD_USER: getBuildUser(), GRADLE_BUILD_DATE: getBuildDate(), GRADLE_JAVA_VERSION: getJavaVersion(), GRADLE_GIT_COMMIT_HASH: getBuildGITCommitHash(), GRADLE_GIT_COMMIT_USER: getBuildGITCommitUser(), GRADLE_GIT_COMMIT_MESSAGE: getBuildGITCommitMessage(), GRADLE_BUILD_SERVER_HOST: getBuildServerHost(), GRADLE_BUILD_SERVER_BUILD: getBuildServerBuild(), GRADLE_BUILD_MODULE_VERSION: getBuildModuleVersion()]
+    [GRADLE_BUILD_ARTIFACT_ID: getProjectArtifactID(), GRADLE_BUILD_PROJECT_TITLE: getProjectTitle(), GRADLE_BUILD_USER: getBuildUser(), GRADLE_BUILD_DATE: getBuildDate(), GRADLE_JAVA_VERSION: getJavaVersion(), GRADLE_GIT_COMMIT_HASH: getBuildGITCommitHash(), GRADLE_GIT_COMMIT_USER: getBuildGITCommitUser(), GRADLE_GIT_COMMIT_MESSAGE: getBuildGITCommitMessage(), GRADLE_BUILD_SERVER_HOST: getBuildServerHost(), GRADLE_BUILD_SERVER_BUILD: getBuildServerBuild(), GRADLE_BUILD_MODULE_VERSION: getBuildModuleVersion()]
+}
+
+def getProjectArtifactID() {
+    'ahome-tooling-server-mongodb'
+}
+
+def getProjectTitle() {
+    'Ahome-Tooling-Server-MongoDB'
 }
 
 def getBuildModuleVersion() {
@@ -130,11 +138,11 @@ repositories {
 }
 
 sourceSets {
-  main {
-    resources {
-      source groovy
+    main {
+        resources {
+            source groovy
+        }
     }
-  }
 }
 
 tasks.withType(GroovyCompile) {
@@ -146,7 +154,7 @@ configurations {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.43-SNAPSHOT')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.44-SNAPSHOT')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.1')
 }
 
