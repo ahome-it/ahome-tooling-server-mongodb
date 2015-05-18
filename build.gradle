@@ -33,7 +33,7 @@ apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 
-version = '1.0.52-SNAPSHOT'
+version = '1.0.53-SNAPSHOT'
 
 group = 'com.ahome-it'
 
@@ -114,7 +114,7 @@ def getBuildServerBuild() {
     {
         return name
     }
-    'unknown'
+    'Command line ' + GradleVersion.current().toString()
 }
 
 def getBuildGITCommitHash() {
@@ -154,7 +154,7 @@ configurations {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.44-SNAPSHOT')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.45-SNAPSHOT')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.1')
 }
 
