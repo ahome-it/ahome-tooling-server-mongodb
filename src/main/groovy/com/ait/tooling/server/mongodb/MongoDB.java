@@ -31,6 +31,7 @@ import static com.mongodb.client.model.Filters.or;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -65,15 +66,17 @@ import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.UpdateOptions;
 
-public final class MongoDB
+public final class MongoDB implements Serializable
 {
-    private static final Logger logger = Logger.getLogger(MongoDB.class);
+    private static final long   serialVersionUID = 2378917194666504499L;
+
+    private static final Logger logger           = Logger.getLogger(MongoDB.class);
 
     private final MongoClient   m_mongo;
 
     private final String        m_usedb;
 
-    private boolean             m_id   = false;
+    private boolean             m_id             = false;
 
     public MongoDB(final MongoClientOptions options, final String host, final int port, final String usedb)
     {
