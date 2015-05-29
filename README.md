@@ -20,7 +20,7 @@ SNAPSHOT:
 <dependency>
   <groupId>com.ahome-it</groupId>
   <artifactId>ahome-tooling-server-mongodb</artifactId>
-  <version>1.0.60-SNAPSHOT</version>
+  <version>1.0.62-SNAPSHOT</version>
 </dependency>
 ```
 

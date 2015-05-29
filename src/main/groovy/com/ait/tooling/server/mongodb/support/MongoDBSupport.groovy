@@ -55,7 +55,7 @@ public class MongoDBSupport extends CoreGroovySupport implements Serializable
     @Memoized
     public IMongoDBContext getMongoDBContext()
     {
-        MongoDBContextInstance.get()
+        MongoDBContextInstance.getMongoDBContextInstance()
     }
 
     @Memoized

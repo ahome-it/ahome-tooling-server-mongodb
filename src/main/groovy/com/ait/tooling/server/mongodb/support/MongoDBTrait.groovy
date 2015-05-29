@@ -38,7 +38,7 @@ public trait MongoDBTrait
     @Memoized
     public IMongoDBContext getMongoDBContext()
     {
-        MongoDBContextInstance.get()
+        MongoDBContextInstance.getMongoDBContextInstance()
     }
 
     @Memoized
