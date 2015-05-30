@@ -33,7 +33,7 @@ apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 
-version = '1.0.64-SNAPSHOT'
+version = '1.0.65-SNAPSHOT'
 
 group = 'com.ahome-it'
 
@@ -136,8 +136,8 @@ configurations {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.64-SNAPSHOT')
-    compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.1')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.65-SNAPSHOT')
+    compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.2')
 }
 
 uploadArchives {
