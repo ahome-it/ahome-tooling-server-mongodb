@@ -38,6 +38,6 @@ public class MongoDBContextInstance extends ServerContextInstance implements IMo
     @Override
     public final IMongoDBProvider getMongoDBProvider()
     {
-        return Objects.requireNonNull(getBean("MongoDBProvider", IMongoDBProvider.class), "MongoDBProvider is null, initialization error.");
+        return Objects.requireNonNull(getBeanSafely("MongoDBProvider", IMongoDBProvider.class), "MongoDBProvider is null, initialization error.");
     }
 }
