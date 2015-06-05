@@ -19,10 +19,10 @@ package com.ait.tooling.server.mongodb.support.spring;
 import java.io.Closeable;
 import java.io.Serializable;
 
-import com.ait.tooling.common.api.types.INamedDefinition;
+import com.ait.tooling.common.api.types.INamedType;
 import com.ait.tooling.server.mongodb.MongoDB;
 
-public interface IMongoDBDescriptor extends Closeable, INamedDefinition, Serializable
+public interface IMongoDBDescriptor extends Closeable, INamedType, Serializable
 {
     public MongoDB getMongoDB();
 
@@ -47,8 +47,8 @@ public interface IMongoDBDescriptor extends Closeable, INamedDefinition, Seriali
     public void setPort(int port);
 
     public String getDefaultDB();
-    
+
     public boolean isAddingID();
-    
+
     public void setAddingID(boolean id);
 }
