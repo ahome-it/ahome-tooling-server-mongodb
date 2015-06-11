@@ -24,6 +24,7 @@ import com.ait.tooling.json.JSONObject
 import com.ait.tooling.server.mongodb.MongoDB
 import com.ait.tooling.server.mongodb.MongoDB.IMCursor
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
+import com.ait.tooling.server.mongodb.MongoDB.MCollectionOptions
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
 import com.ait.tooling.server.mongodb.MongoDB.MProjection
 import com.ait.tooling.server.mongodb.MongoDB.MQuery
@@ -51,6 +52,11 @@ public trait MongoDBTrait
     public MCollection collection(String name) throws Exception
     {
         db().collection(StringOps.requireTrimOrNull(name))
+    }
+
+    public MCollection collection(String name, MCollectionOptions opts) throws Exception
+    {
+        db().collection(StringOps.requireTrimOrNull(name), opts)
     }
 
     @Memoized

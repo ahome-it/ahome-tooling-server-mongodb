@@ -57,6 +57,8 @@ import com.ait.tooling.common.api.java.util.StringOps;
 import com.ait.tooling.json.JSONUtils;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -194,6 +196,103 @@ public final class MongoDB implements Serializable
         public final MCollection collection(final String name) throws Exception
         {
             return new MCollection(m_db.getCollection(StringOps.requireTrimOrNull(name)), isAddingID());
+        }
+
+        public final MCollection collection(final String name, final MCollectionOptions opts) throws Exception
+        {
+            if ((null != opts) && (opts.isValid()))
+            {
+                return opts.withCollectionOptions(m_db.getCollection(StringOps.requireTrimOrNull(name)), isAddingID());
+            }
+            else
+            {
+                return new MCollection(m_db.getCollection(StringOps.requireTrimOrNull(name)), isAddingID());
+            }
+        }
+    }
+
+    public static final class MCollectionOptions
+    {
+        private final WriteConcern   m_write;
+
+        private final ReadPreference m_prefs;
+
+        private final CodecRegistry  m_codec;
+
+        public MCollectionOptions(final WriteConcern write, final ReadPreference prefs, final CodecRegistry codec)
+        {
+            m_write = write;
+
+            m_prefs = prefs;
+
+            m_codec = codec;
+        }
+
+        public MCollectionOptions(final WriteConcern write)
+        {
+            this(write, null, null);
+        }
+
+        public MCollectionOptions(final ReadPreference prefs)
+        {
+            this(null, prefs, null);
+        }
+
+        public MCollectionOptions(final CodecRegistry codec)
+        {
+            this(null, null, codec);
+        }
+
+        public MCollectionOptions(final WriteConcern write, final ReadPreference prefs)
+        {
+            this(write, prefs, null);
+        }
+
+        public MCollectionOptions(final WriteConcern write, final CodecRegistry codec)
+        {
+            this(write, null, codec);
+        }
+
+        public MCollectionOptions(final ReadPreference prefs, final CodecRegistry codec)
+        {
+            this(null, prefs, codec);
+        }
+
+        final boolean isValid()
+        {
+            return (false == ((null == m_write) && (null == m_prefs) && (null == m_codec)));
+        }
+
+        final MCollection withCollectionOptions(final MongoCollection<Document> collection, boolean id)
+        {
+            return new MCollection(withCodecRegistry(withReadPreference(withWriteConcern(collection, m_write), m_prefs), m_codec), id);
+        }
+
+        private final static MongoCollection<Document> withWriteConcern(final MongoCollection<Document> collection, final WriteConcern write)
+        {
+            if (null == write)
+            {
+                return collection;
+            }
+            return collection.withWriteConcern(write);
+        }
+
+        private final static MongoCollection<Document> withReadPreference(final MongoCollection<Document> collection, final ReadPreference prefs)
+        {
+            if (null == prefs)
+            {
+                return collection;
+            }
+            return collection.withReadPreference(prefs);
+        }
+
+        private final static MongoCollection<Document> withCodecRegistry(final MongoCollection<Document> collection, final CodecRegistry codec)
+        {
+            if (null == codec)
+            {
+                return collection;
+            }
+            return collection.withCodecRegistry(codec);
         }
     }
 

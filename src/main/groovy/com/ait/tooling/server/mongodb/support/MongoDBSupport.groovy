@@ -16,8 +16,6 @@
 
 package com.ait.tooling.server.mongodb.support
 
-import java.io.Serializable;
-
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
@@ -27,6 +25,7 @@ import com.ait.tooling.server.core.support.CoreGroovySupport
 import com.ait.tooling.server.mongodb.MongoDB
 import com.ait.tooling.server.mongodb.MongoDB.IMCursor
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
+import com.ait.tooling.server.mongodb.MongoDB.MCollectionOptions
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
 import com.ait.tooling.server.mongodb.MongoDB.MProjection
 import com.ait.tooling.server.mongodb.MongoDB.MQuery
@@ -68,6 +67,11 @@ public class MongoDBSupport extends CoreGroovySupport implements Serializable
     public MCollection collection(String name) throws Exception
     {
         db().collection(StringOps.requireTrimOrNull(name))
+    }
+
+    public MCollection collection(String name, MCollectionOptions opts) throws Exception
+    {
+        db().collection(StringOps.requireTrimOrNull(name), opts)
     }
 
     @Memoized
