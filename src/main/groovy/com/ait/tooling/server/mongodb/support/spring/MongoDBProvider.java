@@ -33,7 +33,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.ait.tooling.common.api.java.util.StringOps;
 
-@ManagedResource(objectName = "com.ait.tooling.server.mongodb:name=MongoDBProvider", description = "Manage MongoDB Descriptors.")
+@ManagedResource
 public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
 {
     private static final long                               serialVersionUID = 5417970249518001367L;
