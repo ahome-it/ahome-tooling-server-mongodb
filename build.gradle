@@ -34,7 +34,7 @@ apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 
-version = '1.0.90-RC1'
+version = '1.0.92-RC1'
 
 group = 'com.ahome-it'
 
@@ -155,7 +155,7 @@ configurations {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.90-RC1')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.92-RC1')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.2')
 }
 
