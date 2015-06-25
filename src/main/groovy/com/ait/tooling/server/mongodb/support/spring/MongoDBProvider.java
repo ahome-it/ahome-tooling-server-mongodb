@@ -100,14 +100,14 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
         {
             for (IMongoDBDescriptor descriptor : ((DefaultListableBeanFactory) factory).getBeansOfType(IMongoDBDescriptor.class).values())
             {
+                descriptor.setActive(true);
+
                 final String name = StringOps.requireTrimOrNull(descriptor.getName());
 
                 if (null == m_descriptors.get(name))
                 {
                     logger.info("Adding IMongoDBDescriptor(" + name + ") class " + descriptor.getClass().getName());
 
-                    descriptor.setActive(true);
-                    
                     m_descriptors.put(name, descriptor);
                 }
                 else
