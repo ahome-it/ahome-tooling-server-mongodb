@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -57,10 +58,13 @@ import com.ait.tooling.common.api.java.util.StringOps;
 import com.ait.tooling.json.JSONUtils;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
 import com.mongodb.ReadPreference;
+import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -78,10 +82,12 @@ public final class MongoDB implements Serializable
 
     private final String        m_usedb;
 
-    private boolean             m_id             = false;
+    private final boolean       m_useid;
 
-    public MongoDB(final MongoClientOptions options, final String host, final int port, final String usedb)
+    public MongoDB(final List<ServerAddress> addr, final List<MongoCredential> auth, final MongoClientOptions opts, final boolean repl, final String usedb, final boolean useid)
     {
+        m_useid = useid;
+
         m_usedb = StringOps.requireTrimOrNull(usedb);
 
         BSON.addEncodingHook(BigDecimal.class, new Transformer()
@@ -114,17 +120,43 @@ public final class MongoDB implements Serializable
                 return JSONUtils.asInteger(object);
             }
         });
-        m_mongo = new MongoClient(StringOps.requireTrimOrNull(host), Objects.requireNonNull(options));
-    }
+        if (addr.isEmpty())
+        {
+            throw new IllegalArgumentException("no ServerAddress");
+        }
+        if ((addr.size() == 1) && (false == repl))
+        {
+            final ServerAddress main = addr.get(0);
 
-    public void setAddingID(final boolean id)
-    {
-        m_id = id;
+            if (null == main)
+            {
+                throw new IllegalArgumentException("null ServerAddress");
+            }
+            if ((null == auth) || (auth.isEmpty()))
+            {
+                m_mongo = new MongoClient(main, Objects.requireNonNull(opts));
+            }
+            else
+            {
+                m_mongo = new MongoClient(main, auth, Objects.requireNonNull(opts));
+            }
+        }
+        else
+        {
+            if ((null == auth) || (auth.isEmpty()))
+            {
+                m_mongo = new MongoClient(addr, Objects.requireNonNull(opts));
+            }
+            else
+            {
+                m_mongo = new MongoClient(addr, auth, Objects.requireNonNull(opts));
+            }
+        }
     }
 
     public boolean isAddingID()
     {
-        return m_id;
+        return m_useid;
     }
 
     public void close()
@@ -142,17 +174,17 @@ public final class MongoDB implements Serializable
 
     public final MDatabase db(final String name) throws Exception
     {
-        return db(StringOps.requireTrimOrNull(name), false, isAddingID());
+        return db(StringOps.requireTrimOrNull(name), isAddingID());
     }
 
     public final MDatabase db() throws Exception
     {
-        return db(m_usedb, false, isAddingID());
+        return db(m_usedb, isAddingID());
     }
 
-    public final MDatabase db(final String name, final boolean auth, final boolean id) throws Exception
+    public final MDatabase db(final String name, final boolean id) throws Exception
     {
-        return new MDatabase(m_mongo.getDatabase(StringOps.requireTrimOrNull(name)), auth, id);
+        return new MDatabase(m_mongo.getDatabase(StringOps.requireTrimOrNull(name)), id);
     }
 
     public static final class MDatabase
@@ -161,7 +193,7 @@ public final class MongoDB implements Serializable
 
         private final boolean       m_id;
 
-        protected MDatabase(final MongoDatabase db, final boolean auth, final boolean id) throws Exception
+        protected MDatabase(final MongoDatabase db, final boolean id) throws Exception
         {
             m_db = Objects.requireNonNull(db);
 
@@ -319,25 +351,54 @@ public final class MongoDB implements Serializable
             return m_collection.getNamespace().getCollectionName();
         }
 
-        public final MCollection createIndex(Map<String, ?> keys)
+        public final String createIndex(final Map<String, ?> keys)
         {
-            m_collection.createIndex(new MDocument(keys));
+            return m_collection.createIndex(new MDocument(keys));
+        }
+
+        public final String createIndex(final Map<String, ?> keys, final String name)
+        {
+            return m_collection.createIndex(new MDocument(keys), new IndexOptions().name(Objects.requireNonNull(name)));
+        }
+
+        public final String createIndex(final Map<String, ?> keys, final IndexOptions opts)
+        {
+            return m_collection.createIndex(new MDocument(keys), Objects.requireNonNull(opts));
+        }
+
+        public final MCollection dropIndex(final String name)
+        {
+            m_collection.dropIndex(Objects.requireNonNull(name));
 
             return this;
         }
 
-        public final MCollection createIndex(Map<String, ?> arg0, Map<String, ?> arg1)
+        public final MCollection dropIndexes()
         {
-            IndexOptions opts = new IndexOptions();
-
-            m_collection.createIndex(new MDocument(arg0), opts);
+            m_collection.dropIndexes();
 
             return this;
         }
 
-        protected final MAggregateCursor aggregateRaw(final List<? extends Bson> list)
+        public final MIndexCursor getIndexes()
         {
-            return new MAggregateCursor(m_collection.aggregate(Objects.requireNonNull(list)));
+            return new MIndexCursor(m_collection.listIndexes());
+        }
+
+        @SafeVarargs
+        public final <T extends Document> MAggregateCursor aggregate(final T... list)
+        {
+            return aggregate(new MAggregationPipeline(Objects.requireNonNull(list)));
+        }
+
+        public final <T extends Document> MAggregateCursor aggregate(final List<T> list)
+        {
+            return aggregate(new MAggregationPipeline(Objects.requireNonNull(list)));
+        }
+
+        public final MAggregateCursor aggregate(final MAggregationPipeline pipeline)
+        {
+            return new MAggregateCursor(m_collection.aggregate(Objects.requireNonNull(pipeline.list())));
         }
 
         public final void drop()
@@ -636,6 +697,106 @@ public final class MongoDB implements Serializable
         }
     }
 
+    @SuppressWarnings("serial")
+    private static class MAggregationOp extends Document
+    {
+        private MAggregationOp(final Document doc)
+        {
+            super(Objects.requireNonNull(doc));
+        }
+
+        protected static final MAggregationOp makeAggregationOp(final String op, final Map<String, ?> map)
+        {
+            final LinkedHashMap<String, Object> make = new LinkedHashMap<String, Object>(1);
+
+            make.put(Objects.requireNonNull(op), Objects.requireNonNull(map));
+
+            return new MAggregationOp(new Document(make));
+        }
+
+        protected static final MAggregationOp makeAggregationOp(final String op, final Document doc)
+        {
+            final LinkedHashMap<String, Object> make = new LinkedHashMap<String, Object>(1);
+
+            make.put(Objects.requireNonNull(op), Objects.requireNonNull(doc));
+
+            return new MAggregationOp(new Document(make));
+        }
+
+        public static final MAggregationMatch MATCH(final Map<String, ?> map)
+        {
+            return new MAggregationMatch(Objects.requireNonNull(map));
+        }
+
+        public static final MAggregationMatch MATCH(final Document doc)
+        {
+            return new MAggregationMatch(Objects.requireNonNull(doc));
+        }
+
+        public static final MAggregationGroup GROUP(final Map<String, ?> map)
+        {
+            return new MAggregationGroup(Objects.requireNonNull(map));
+        }
+
+        public static final MAggregationGroup GROUP(final Document doc)
+        {
+            return new MAggregationGroup(Objects.requireNonNull(doc));
+        }
+    }
+
+    public static final class MAggregationGroup extends MAggregationOp
+    {
+        private static final long serialVersionUID = 3079372174680166319L;
+
+        public MAggregationGroup(final Map<String, ?> map)
+        {
+            super(makeAggregationOp("$group", Objects.requireNonNull(map)));
+        }
+
+        public MAggregationGroup(final Document doc)
+        {
+            super(makeAggregationOp("$group", Objects.requireNonNull(doc)));
+        }
+    }
+
+    public static final class MAggregationMatch extends MAggregationOp
+    {
+        private static final long serialVersionUID = -1138722876045817851L;
+
+        public MAggregationMatch(final Map<String, ?> map)
+        {
+            super(makeAggregationOp("$match", Objects.requireNonNull(map)));
+        }
+
+        public MAggregationMatch(final Document doc)
+        {
+            super(makeAggregationOp("$match", Objects.requireNonNull(doc)));
+        }
+    }
+
+    public static final class MAggregationPipeline implements Serializable
+    {
+        private static final long         serialVersionUID = 6751726485032397782L;
+
+        private final ArrayList<Document> m_pipeline       = new ArrayList<Document>();
+
+        public <T extends Document> MAggregationPipeline(final List<T> list)
+        {
+            m_pipeline.addAll(Objects.requireNonNull(list));
+        }
+
+        @SafeVarargs
+        public <T extends Document> MAggregationPipeline(final T... list)
+        {
+            m_pipeline.addAll(Arrays.asList(Objects.requireNonNull(list)));
+        }
+
+        List<Document> list()
+        {
+            return m_pipeline;
+        }
+    }
+
     public static interface IMCursor extends Iterable<Map<String, ?>>, Iterator<Map<String, ?>>, Closeable
     {
         public <A extends Collection<? super Map<String, ?>>> A into(A target);
@@ -730,6 +891,14 @@ public final class MongoDB implements Serializable
 
                 m_closed = true;
             }
+        }
+    }
+
+    public static final class MIndexCursor extends AbstractMCursor<ListIndexesIterable<Document>>
+    {
+        protected MIndexCursor(final ListIndexesIterable<Document> index)
+        {
+            super(index);
         }
     }
 

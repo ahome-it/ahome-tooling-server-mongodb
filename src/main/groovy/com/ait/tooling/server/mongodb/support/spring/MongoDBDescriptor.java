@@ -17,57 +17,159 @@
 package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
+import org.apache.log4j.Logger;
+
 import com.ait.tooling.common.api.java.util.StringOps;
+import com.ait.tooling.common.api.types.Activatable;
+import com.ait.tooling.server.core.support.spring.IPropertiesResolver;
+import com.ait.tooling.server.core.support.spring.ServerContextInstance;
 import com.ait.tooling.server.mongodb.MongoDB;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
-public class MongoDBDescriptor implements IMongoDBDescriptor
+public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
 {
-    private static final long serialVersionUID = 4921229488618930502L;
+    private static final long          serialVersionUID = 4921229488618930502L;
 
-    private String            m_name;
+    private static final Logger        logger           = Logger.getLogger(MongoDBDescriptor.class);
 
-    private MongoDB           m_modb;
+    private String                     m_name;
 
-    private boolean           m_id             = false;
+    private MongoDB                    m_mongo_db;
 
-    private String            m_mongohost      = "localhost";
+    private boolean                    m_createid       = false;
 
-    private int               m_mongoport      = 27017;
+    private boolean                    m_replicas       = false;
 
-    private int               m_poolsize       = 100;
+    private int                        m_poolsize       = 100;
 
-    private int               m_multiple       = 100;
+    private int                        m_multiple       = 100;
 
-    private int               m_ctimeout       = 10000;
+    private int                        m_ctimeout       = 10000;
 
-    private final String      m_defaultd;
+    private String                     m_defaultd;
 
-    public MongoDBDescriptor(final String defaultd)
+    private MongoClientOptions         m_coptions;
+
+    private ArrayList<ServerAddress>   m_addrlist;
+
+    private ArrayList<MongoCredential> m_authlist;
+
+    private final String               m_baseprop;
+
+    public MongoDBDescriptor(final String baseprop)
     {
-        m_defaultd = StringOps.requireTrimOrNull(defaultd);
+        m_baseprop = StringOps.requireTrimOrNull(baseprop);
     }
 
     @Override
-    public boolean isAddingID()
+    public boolean setActive(final boolean active)
     {
-        return m_id;
+        if (null == m_addrlist)
+        {
+            if (false == init())
+            {
+                return false;
+            }
+        }
+        return super.setActive(active);
+    }
+
+    private final boolean init()
+    {
+        try
+        {
+            final IPropertiesResolver prop = ServerContextInstance.getServerContextInstance().getPropertiesResolver();
+
+            setName(prop.getPropertyByName(m_baseprop + ".name"));
+
+            setDefaultDB(prop.getPropertyByName(m_baseprop + ".defaultdb"));
+
+            setReplicas(Boolean.valueOf(prop.getPropertyByName(m_baseprop + ".replicas", "false")));
+
+            setCreateID(Boolean.valueOf(prop.getPropertyByName(m_baseprop + ".createid", "false")));
+
+            final ArrayList<ServerAddress> addrlist = new ArrayList<ServerAddress>();
+
+            for (String name : StringOps.requireTrimOrNull(prop.getPropertyByName(m_baseprop + ".host.list")).split(","))
+            {
+                name = StringOps.toTrimOrNull(name);
+
+                if (null != name)
+                {
+                    final String addr = StringOps.requireTrimOrNull(prop.getPropertyByName(m_baseprop + ".host." + name + ".addr"));
+
+                    final String port = StringOps.requireTrimOrNull(prop.getPropertyByName(m_baseprop + ".host." + name + ".port"));
+
+                    addrlist.add(new ServerAddress(addr, Integer.valueOf(port)));
+                }
+            }
+            if (addrlist.isEmpty())
+            {
+                throw new IllegalArgumentException("no MongoDB server address");
+            }
+            m_addrlist = addrlist;
+
+            final String temp = StringOps.toTrimOrNull(prop.getPropertyByName(m_baseprop + ".auth.list"));
+
+            if (null != temp)
+            {
+                final ArrayList<MongoCredential> authlist = new ArrayList<MongoCredential>();
+
+                for (String name : temp.split(","))
+                {
+                    name = StringOps.toTrimOrNull(name);
+
+                    if (null != name)
+                    {
+                        final String user = StringOps.requireTrimOrNull(prop.getPropertyByName(m_baseprop + ".auth." + name + ".user"));
+
+                        final String pass = StringOps.requireTrimOrNull(prop.getPropertyByName(m_baseprop + ".auth." + name + ".pass"));
+
+                        final String data = StringOps.requireTrimOrNull(prop.getPropertyByName(m_baseprop + ".auth." + name + ".db"));
+
+                        authlist.add(MongoCredential.createCredential(user, data, pass.toCharArray()));
+                    }
+                }
+                m_authlist = authlist;
+            }
+            if (null == getClientOptions())
+            {
+                setClientOptions(MongoClientOptions.builder().connectionsPerHost(getConnectionPoolSize()).threadsAllowedToBlockForConnectionMultiplier(getConnectionMultiplier()).connectTimeout(getConnectionTimeout()).build());
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.error("error initializing MongoDBDescriptor", e);
+
+            return false;
+        }
     }
 
     @Override
-    public void setAddingID(final boolean id)
+    public boolean isCreateID()
     {
-        m_id = id;
+        return m_createid;
+    }
+
+    private final void setCreateID(final boolean createid)
+    {
+        m_createid = createid;
     }
 
     @Override
     public void close() throws IOException
     {
-        if (null != m_modb)
+        if (null != m_mongo_db)
         {
-            m_modb.close();
+            m_mongo_db.close();
         }
     }
 
@@ -77,8 +179,7 @@ public class MongoDBDescriptor implements IMongoDBDescriptor
         return m_name;
     }
 
-    @Override
-    public void setName(final String name)
+    private final void setName(final String name)
     {
         m_name = Objects.requireNonNull(StringOps.toTrimOrNull(name), "MongoDBDescriptor name is null or empty");
     }
@@ -86,15 +187,11 @@ public class MongoDBDescriptor implements IMongoDBDescriptor
     @Override
     public synchronized MongoDB getMongoDB()
     {
-        if (null == m_modb)
+        if (null == m_mongo_db)
         {
-            final MongoClientOptions opts = MongoClientOptions.builder().connectionsPerHost(getConnectionPoolSize()).threadsAllowedToBlockForConnectionMultiplier(getConnectionMultiplier()).connectTimeout(getConnectionTimeout()).build();
-
-            m_modb = new MongoDB(opts, getHost(), getPort(), getDefaultDB());
-
-            m_modb.setAddingID(isAddingID());
+            m_mongo_db = new MongoDB(getAddresses(), getCredentials(), getClientOptions(), isReplicas(), getDefaultDB(), isCreateID());
         }
-        return m_modb;
+        return m_mongo_db;
     }
 
     @Override
@@ -115,56 +212,63 @@ public class MongoDBDescriptor implements IMongoDBDescriptor
         return m_poolsize;
     }
 
-    @Override
     public void setConnectionTimeout(final int timeout)
     {
         m_ctimeout = Math.max(0, timeout);
     }
 
-    @Override
     public void setConnectionMultiplier(final int multiplier)
     {
         m_multiple = Math.max(0, multiplier);
     }
 
-    @Override
     public void setConnectionPoolSize(final int poolsize)
     {
         m_poolsize = Math.max(1, poolsize);
     }
 
     @Override
-    public String getHost()
-    {
-        return m_mongohost;
-    }
-
-    @Override
-    public void setHost(String host)
-    {
-        host = StringOps.toTrimOrNull(host);
-
-        if (host != null)
-        {
-            m_mongohost = host;
-        }
-    }
-
-    @Override
-    public int getPort()
-    {
-        return m_mongoport;
-    }
-
-    @Override
-    public void setPort(final int port)
-    {
-        m_mongoport = Math.max(1024 + 1, port);
-    }
-
-    @Override
     public String getDefaultDB()
     {
         return m_defaultd;
+    }
+
+    public void setDefaultDB(final String name)
+    {
+        m_defaultd = Objects.requireNonNull(StringOps.toTrimOrNull(name), "DefaultDB is null or empty");
+    }
+
+    @Override
+    public List<MongoCredential> getCredentials()
+    {
+        return Collections.unmodifiableList(m_authlist);
+    }
+
+    @Override
+    public boolean isReplicas()
+    {
+        return m_replicas;
+    }
+
+    public void setReplicas(final boolean replicas)
+    {
+        m_replicas = replicas;
+    }
+
+    @Override
+    public List<ServerAddress> getAddresses()
+    {
+        return Collections.unmodifiableList(m_addrlist);
+    }
+
+    public void setClientOptions(final MongoClientOptions coptions)
+    {
+        m_coptions = Objects.requireNonNull(coptions);
+    }
+
+    @Override
+    public MongoClientOptions getClientOptions()
+    {
+        return m_coptions;
     }
 }

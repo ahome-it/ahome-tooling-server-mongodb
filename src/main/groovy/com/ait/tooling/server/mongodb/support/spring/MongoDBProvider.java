@@ -40,29 +40,25 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
 
     private static final Logger                             logger           = Logger.getLogger(MongoDBProvider.class);
 
-    private final String                                    m_descriptor;
+    private final String                                    m_default_descriptor_name;
 
     private final LinkedHashMap<String, IMongoDBDescriptor> m_descriptors    = new LinkedHashMap<String, IMongoDBDescriptor>();
 
-    public MongoDBProvider(final String descriptor)
+    public MongoDBProvider(final String descriptor_name)
     {
-        m_descriptor = StringOps.requireTrimOrNull(descriptor);
+        m_default_descriptor_name = StringOps.requireTrimOrNull(descriptor_name);
     }
 
     @Override
     public String getDefaultMongoDBDescriptorName()
     {
-        return m_descriptor;
+        return m_default_descriptor_name;
     }
 
     @Override
     public IMongoDBDescriptor getMongoDBDescriptor(final String name)
     {
-        if (null != name)
-        {
-            return m_descriptors.get(name);
-        }
-        return null;
+        return m_descriptors.get(StringOps.requireTrimOrNull(name));
     }
 
     @Override
@@ -102,15 +98,22 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
     {
         if (factory instanceof DefaultListableBeanFactory)
         {
-            for (String name : ((DefaultListableBeanFactory) factory).getBeansOfType(IMongoDBDescriptor.class).keySet())
+            for (IMongoDBDescriptor descriptor : ((DefaultListableBeanFactory) factory).getBeansOfType(IMongoDBDescriptor.class).values())
             {
-                final IMongoDBDescriptor descriptor = factory.getBean(name, IMongoDBDescriptor.class);
+                final String name = StringOps.requireTrimOrNull(descriptor.getName());
 
-                descriptor.setName(name);
+                if (null == m_descriptors.get(name))
+                {
+                    logger.info("Adding IMongoDBDescriptor(" + name + ") class " + descriptor.getClass().getName());
 
-                logger.info("Found IMongoDBDescriptor(" + name + ") class " + descriptor.getClass().getName());
-
-                m_descriptors.put(name, descriptor);
+                    descriptor.setActive(true);
+                    
+                    m_descriptors.put(name, descriptor);
+                }
+                else
+                {
+                    logger.error("Duplicate IMongoDBDescriptor(" + name + ") class " + descriptor.getClass().getName());
+                }
             }
         }
     }

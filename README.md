@@ -13,7 +13,7 @@ RELEASE:
 <dependency>
   <groupId>com.ahome-it</groupId>
   <artifactId>ahome-tooling-server-mongodb</artifactId>
-  <version>1.0.92-RC1</version>
+  <version>1.0.93-RC1</version>
 </dependency>
 ```
 
