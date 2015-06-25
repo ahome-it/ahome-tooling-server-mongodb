@@ -89,7 +89,7 @@ public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
 
             setName(prop.getPropertyByName(m_baseprop + ".name"));
 
-            setDefaultDB(prop.getPropertyByName(m_baseprop + ".defaultdb"));
+            setDefaultDB(prop.getPropertyByName(m_baseprop + ".db"));
 
             setReplicas(Boolean.valueOf(prop.getPropertyByName(m_baseprop + ".replicas", "false")));
 

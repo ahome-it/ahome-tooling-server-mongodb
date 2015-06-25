@@ -38,7 +38,7 @@
 	</bean>
 
 	<bean id="MongoDBProvider" class="com.ait.tooling.server.mongodb.support.spring.MongoDBProvider" destroy-method="close">
-		<constructor-arg value="${mongodbprovider.default.name}"/>
+		<constructor-arg value="${mongodb.default.descriptor}"/>
 	</bean>
 
 </beans>

@@ -24,6 +24,8 @@ import com.ait.tooling.json.JSONObject
 import com.ait.tooling.server.core.support.CoreGroovySupport
 import com.ait.tooling.server.mongodb.MongoDB
 import com.ait.tooling.server.mongodb.MongoDB.IMCursor
+import com.ait.tooling.server.mongodb.MongoDB.MAggregationGroup
+import com.ait.tooling.server.mongodb.MongoDB.MAggregationMatch
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
 import com.ait.tooling.server.mongodb.MongoDB.MCollectionOptions
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
@@ -306,5 +308,15 @@ public class MongoDBSupport extends CoreGroovySupport implements Serializable
     public MQuery EXISTS(String name)
     {
         MQuery.EXISTS(name)
+    }
+
+    public MAggregationMatch MATCH(Map map)
+    {
+        new MAggregationMatch(map)
+    }
+
+    public MAggregationGroup GROUP(Map map)
+    {
+        new MAggregationGroup(map)
     }
 }
