@@ -34,7 +34,7 @@ apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 
-version = '1.0.95-RELEASE'
+version = '1.0.96-RELEASE'
 
 group = 'com.ahome-it'
 
@@ -150,13 +150,9 @@ tasks.withType(GroovyCompile) {
     groovyOptions.optimizationOptions.indy = true
 }
 
-configurations {
-    compile.exclude(group: 'org.slf4j', module: 'log4j-over-slf4j')
-}
-
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.93-RELEASE')
-    compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.2')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.95-RELEASE')
+    compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.3')
 }
 
 artifacts {
