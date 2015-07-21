@@ -34,7 +34,7 @@ apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 
-version = '1.0.97-RELEASE'
+version = '1.0.101-RELEASE'
 
 group = 'com.ahome-it'
 
@@ -150,7 +150,7 @@ tasks.withType(GroovyCompile) {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.97-RELEASE')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.101-RELEASE')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.3')
 }
 
