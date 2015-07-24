@@ -17,11 +17,9 @@
 package com.ait.tooling.server.mongodb.support
 
 import groovy.transform.CompileStatic
-import groovy.transform.Memoized
 
 import com.ait.tooling.common.api.java.util.StringOps
 import com.ait.tooling.json.JSONObject
-import com.ait.tooling.server.core.support.CoreGroovySupport
 import com.ait.tooling.server.mongodb.MongoDB
 import com.ait.tooling.server.mongodb.MongoDB.IMCursor
 import com.ait.tooling.server.mongodb.MongoDB.MAggregationGroup
@@ -37,35 +35,18 @@ import com.ait.tooling.server.mongodb.support.spring.IMongoDBProvider
 import com.ait.tooling.server.mongodb.support.spring.MongoDBContextInstance
 
 @CompileStatic
-public class MongoDBSupport extends CoreGroovySupport implements Serializable
+public trait MongoDBTraitPlain
 {
-    private static final MongoDBSupport INSTANCE = new MongoDBSupport()
-
-    private static final long serialVersionUID = 1628088544127287195L
-
-    @Memoized
-    public static final MongoDBSupport getMongoDBSupport()
-    {
-        INSTANCE
-    }
-
-    public MongoDBSupport()
-    {
-    }
-
-    @Memoized
     public IMongoDBContext getMongoDBContext()
     {
         MongoDBContextInstance.getMongoDBContextInstance()
     }
 
-    @Memoized
     public IMongoDBProvider getMongoDBProvider()
     {
         getMongoDBContext().getMongoDBProvider()
     }
 
-    @Memoized
     public MCollection collection(String name) throws Exception
     {
         db().collection(StringOps.requireTrimOrNull(name))
@@ -76,31 +57,26 @@ public class MongoDBSupport extends CoreGroovySupport implements Serializable
         db().collection(StringOps.requireTrimOrNull(name), opts)
     }
 
-    @Memoized
     public MDatabase db(String name) throws Exception
     {
         getMongoDB().db(StringOps.requireTrimOrNull(name))
     }
 
-    @Memoized
     public MDatabase db() throws Exception
     {
         getMongoDB().db()
     }
 
-    @Memoized
     public MongoDB getMongoDB()
     {
         getMongoDB(getMongoDBDefaultDescriptorName())
     }
 
-    @Memoized
     public MongoDB getMongoDB(String name)
     {
         getMongoDBProvider().getMongoDBDescriptor(StringOps.requireTrimOrNull(name)).getMongoDB()
     }
 
-    @Memoized
     public String getMongoDBDefaultDescriptorName()
     {
         getMongoDBProvider().getMongoDBDefaultDescriptorName()
@@ -207,7 +183,6 @@ public class MongoDBSupport extends CoreGroovySupport implements Serializable
         MProjection.EXCLUDE(fields)
     }
 
-    @Memoized
     public MProjection NO_ID()
     {
         MProjection.NO_ID()

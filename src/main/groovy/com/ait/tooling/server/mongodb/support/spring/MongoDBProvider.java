@@ -40,19 +40,29 @@ public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
 
     private static final Logger                             logger           = Logger.getLogger(MongoDBProvider.class);
 
-    private final String                                    m_default_descriptor_name;
+    private final String                                    m_default_name;
+
+    private final String                                    m_default_base;
 
     private final LinkedHashMap<String, IMongoDBDescriptor> m_descriptors    = new LinkedHashMap<String, IMongoDBDescriptor>();
 
-    public MongoDBProvider(final String descriptor_name)
+    public MongoDBProvider(final String default_base, final String default_name)
     {
-        m_default_descriptor_name = StringOps.requireTrimOrNull(descriptor_name);
+        m_default_base = StringOps.requireTrimOrNull(default_base);
+
+        m_default_name = StringOps.requireTrimOrNull(default_name);
     }
 
     @Override
-    public String getDefaultMongoDBDescriptorName()
+    public String getMongoDBDefaultPropertiesBase()
     {
-        return m_default_descriptor_name;
+        return m_default_base;
+    }
+
+    @Override
+    public String getMongoDBDefaultDescriptorName()
+    {
+        return m_default_name;
     }
 
     @Override

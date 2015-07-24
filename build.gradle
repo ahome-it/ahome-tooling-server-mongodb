@@ -34,7 +34,9 @@ apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 
-version = '1.0.105-RELEASE'
+targetCompatibility = 1.7
+
+version = '1.0.106-RELEASE'
 
 group = 'com.ahome-it'
 
@@ -55,7 +57,7 @@ task('filterConfigs', dependsOn: deleteConfigs, type: Copy) {
 task doJavaDocs(type: Javadoc) {
     source = sourceSets.main.allJava
     failOnError = false
-    title = 'Ahome Tooling Server MongoDB'
+    title = "${getProjectCommonName()} ${getBuildModuleVersion()}"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -88,6 +90,10 @@ def getProjectArtifactID() {
 
 def getProjectTitle() {
     'Ahome-Tooling-Server-MongoDB'
+}
+
+def getProjectCommonName() {
+    'Ahome Tooling Server MongoDB'
 }
 
 def getBuildModuleVersion() {
@@ -150,7 +156,7 @@ tasks.withType(GroovyCompile) {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.105-RELEASE')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.106-RELEASE')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.3')
 }
 
@@ -168,7 +174,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            repository(url: "${sonatype_staging_URL}") {
                 authentication(userName: "${sonatype_user}", password: "${sonatype_password}")
             }
             pom.project {

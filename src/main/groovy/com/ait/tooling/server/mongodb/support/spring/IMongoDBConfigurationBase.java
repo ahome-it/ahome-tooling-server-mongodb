@@ -16,19 +16,11 @@
 
 package com.ait.tooling.server.mongodb.support.spring;
 
-import java.io.Closeable;
 import java.io.Serializable;
-import java.util.List;
 
-public interface IMongoDBProvider extends Closeable, Serializable
+import com.ait.tooling.common.api.types.INamed;
+
+public interface IMongoDBConfigurationBase extends INamed, Serializable
 {
-    public IMongoDBDescriptor getMongoDBDescriptor(String name);
-
-    public List<String> getMongoDBDescriptorNames();
-
-    public List<IMongoDBDescriptor> getMongoDBDescriptors();
-
-    public String getMongoDBDefaultDescriptorName();
-    
-    public String getMongoDBDefaultPropertiesBase();
+    public boolean isCreateID();
 }

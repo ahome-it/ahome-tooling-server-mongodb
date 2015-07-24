@@ -16,19 +16,32 @@
 
 package com.ait.tooling.server.mongodb.support.spring;
 
-import java.io.Closeable;
-import java.io.Serializable;
-import java.util.List;
+import com.ait.tooling.common.api.java.util.StringOps;
 
-public interface IMongoDBProvider extends Closeable, Serializable
+public class MongoDBCollectionOptions implements IMongoDBCollectionOptions
 {
-    public IMongoDBDescriptor getMongoDBDescriptor(String name);
+    private static final long serialVersionUID = -6973950691503354580L;
 
-    public List<String> getMongoDBDescriptorNames();
+    private final boolean     m_icid;
 
-    public List<IMongoDBDescriptor> getMongoDBDescriptors();
+    private final String      m_name;
 
-    public String getMongoDBDefaultDescriptorName();
-    
-    public String getMongoDBDefaultPropertiesBase();
+    public MongoDBCollectionOptions(final String name, final boolean icid)
+    {
+        m_icid = icid;
+
+        m_name = StringOps.requireTrimOrNull(name);
+    }
+
+    @Override
+    public String getName()
+    {
+        return m_name;
+    }
+
+    @Override
+    public boolean isCreateID()
+    {
+        return m_icid;
+    }
 }

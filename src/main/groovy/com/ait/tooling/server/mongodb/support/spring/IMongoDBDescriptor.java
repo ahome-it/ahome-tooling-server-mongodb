@@ -19,15 +19,15 @@ package com.ait.tooling.server.mongodb.support.spring;
 import java.io.Closeable;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import com.ait.tooling.common.api.types.IActivatable;
-import com.ait.tooling.common.api.types.INamed;
 import com.ait.tooling.server.mongodb.MongoDB;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
-public interface IMongoDBDescriptor extends Closeable, INamed, IActivatable, Serializable
+public interface IMongoDBDescriptor extends IMongoDBConfigurationBase, IActivatable, Closeable, Serializable
 {
     public MongoDB getMongoDB();
 
@@ -39,13 +39,13 @@ public interface IMongoDBDescriptor extends Closeable, INamed, IActivatable, Ser
 
     public String getDefaultDB();
 
-    public boolean isCreateID();
-
     public boolean isReplicas();
 
     public List<MongoCredential> getCredentials();
 
     public List<ServerAddress> getAddresses();
-    
+
     public MongoClientOptions getClientOptions();
+
+    public Map<String, IMongoDBOptions> getDBOptions();
 }

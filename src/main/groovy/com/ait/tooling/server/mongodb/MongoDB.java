@@ -56,6 +56,8 @@ import org.bson.types.ObjectId;
 
 import com.ait.tooling.common.api.java.util.StringOps;
 import com.ait.tooling.json.JSONUtils;
+import com.ait.tooling.server.mongodb.support.spring.IMongoDBCollectionOptions;
+import com.ait.tooling.server.mongodb.support.spring.IMongoDBOptions;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
@@ -74,19 +76,23 @@ import com.mongodb.client.model.UpdateOptions;
 
 public final class MongoDB implements Serializable
 {
-    private static final long   serialVersionUID = 2378917194666504499L;
+    private static final long                  serialVersionUID = 2378917194666504499L;
 
-    private static final Logger logger           = Logger.getLogger(MongoDB.class);
+    private static final Logger                logger           = Logger.getLogger(MongoDB.class);
 
-    private final MongoClient   m_mongo;
+    private final MongoClient                  m_mongo;
 
-    private final String        m_usedb;
+    private final String                       m_usedb;
 
-    private final boolean       m_useid;
+    private final boolean                      m_useid;
 
-    public MongoDB(final List<ServerAddress> addr, final List<MongoCredential> auth, final MongoClientOptions opts, final boolean repl, final String usedb, final boolean useid)
+    private final Map<String, IMongoDBOptions> m_dbops;
+
+    public MongoDB(final List<ServerAddress> addr, final List<MongoCredential> auth, final MongoClientOptions opts, final boolean repl, final String usedb, final boolean useid, final Map<String, IMongoDBOptions> dbops)
     {
         m_useid = useid;
+
+        m_dbops = Objects.requireNonNull(dbops);
 
         m_usedb = StringOps.requireTrimOrNull(usedb);
 
@@ -182,25 +188,39 @@ public final class MongoDB implements Serializable
         return db(m_usedb, isAddingID());
     }
 
-    public final MDatabase db(final String name, final boolean id) throws Exception
+    public final MDatabase db(String name, boolean id) throws Exception
     {
-        return new MDatabase(m_mongo.getDatabase(StringOps.requireTrimOrNull(name)), id);
+        name = StringOps.requireTrimOrNull(name);
+
+        final IMongoDBOptions op = m_dbops.get(name);
+
+        if (null != op)
+        {
+            id = op.isCreateID();
+        }
+        return new MDatabase(m_mongo.getDatabase(name), id, op);
     }
 
-    public static final class MDatabase
+    public static final class MDatabase implements Serializable
     {
-        private final MongoDatabase m_db;
+        private static final long     serialVersionUID = 4004001784763847556L;
 
-        private final boolean       m_id;
+        private final MongoDatabase   m_db;
 
-        protected MDatabase(final MongoDatabase db, final boolean id) throws Exception
+        private final IMongoDBOptions m_op;
+
+        private final boolean         m_id;
+
+        protected MDatabase(final MongoDatabase db, final boolean id, final IMongoDBOptions op) throws Exception
         {
+            m_id = id;
+
             m_db = Objects.requireNonNull(db);
 
-            m_id = id;
+            m_op = Objects.requireNonNull(op);
         }
 
-        public boolean isAddingID()
+        public boolean isCreateID()
         {
             return m_id;
         }
@@ -225,33 +245,56 @@ public final class MongoDB implements Serializable
             return m_db.listCollectionNames().into(new ArrayList<String>());
         }
 
-        public final MCollection collection(final String name) throws Exception
+        public final MCollection collection(String name) throws Exception
         {
-            return new MCollection(m_db.getCollection(StringOps.requireTrimOrNull(name)), isAddingID());
-        }
+            name = StringOps.requireTrimOrNull(name);
 
-        public final MCollection collection(final String name, final MCollectionOptions opts) throws Exception
-        {
-            if ((null != opts) && (opts.isValid()))
+            final IMongoDBCollectionOptions cops = m_op.getCollectionOptions(name);
+
+            if (null != cops)
             {
-                return opts.withCollectionOptions(m_db.getCollection(StringOps.requireTrimOrNull(name)), isAddingID());
+                return new MCollection(m_db.getCollection(name), cops.isCreateID());
             }
             else
             {
-                return new MCollection(m_db.getCollection(StringOps.requireTrimOrNull(name)), isAddingID());
+                return new MCollection(m_db.getCollection(name), isCreateID());
+            }
+        }
+
+        public final MCollection collection(String name, final MCollectionPreferences opts) throws Exception
+        {
+            name = StringOps.requireTrimOrNull(name);
+
+            boolean crid = isCreateID();
+
+            final IMongoDBCollectionOptions cops = m_op.getCollectionOptions(name);
+
+            if (null != cops)
+            {
+                crid = cops.isCreateID();
+            }
+            if ((null != opts) && (opts.isValid()))
+            {
+                return opts.withCollectionOptions(m_db.getCollection(name), crid);
+            }
+            else
+            {
+                return new MCollection(m_db.getCollection(name), crid);
             }
         }
     }
 
-    public static final class MCollectionOptions
+    public static final class MCollectionPreferences implements Serializable
     {
+        private static final long    serialVersionUID = -4813050133142084711L;
+
         private final WriteConcern   m_write;
 
         private final ReadPreference m_prefs;
 
         private final CodecRegistry  m_codec;
 
-        public MCollectionOptions(final WriteConcern write, final ReadPreference prefs, final CodecRegistry codec)
+        public MCollectionPreferences(final WriteConcern write, final ReadPreference prefs, final CodecRegistry codec)
         {
             m_write = write;
 
@@ -260,32 +303,32 @@ public final class MongoDB implements Serializable
             m_codec = codec;
         }
 
-        public MCollectionOptions(final WriteConcern write)
+        public MCollectionPreferences(final WriteConcern write)
         {
             this(write, null, null);
         }
 
-        public MCollectionOptions(final ReadPreference prefs)
+        public MCollectionPreferences(final ReadPreference prefs)
         {
             this(null, prefs, null);
         }
 
-        public MCollectionOptions(final CodecRegistry codec)
+        public MCollectionPreferences(final CodecRegistry codec)
         {
             this(null, null, codec);
         }
 
-        public MCollectionOptions(final WriteConcern write, final ReadPreference prefs)
+        public MCollectionPreferences(final WriteConcern write, final ReadPreference prefs)
         {
             this(write, prefs, null);
         }
 
-        public MCollectionOptions(final WriteConcern write, final CodecRegistry codec)
+        public MCollectionPreferences(final WriteConcern write, final CodecRegistry codec)
         {
             this(write, null, codec);
         }
 
-        public MCollectionOptions(final ReadPreference prefs, final CodecRegistry codec)
+        public MCollectionPreferences(final ReadPreference prefs, final CodecRegistry codec)
         {
             this(null, prefs, codec);
         }
@@ -328,8 +371,10 @@ public final class MongoDB implements Serializable
         }
     }
 
-    public static final class MCollection
+    public static final class MCollection implements Serializable
     {
+        private static final long               serialVersionUID = -3505901155958595732L;
+
         private final MongoCollection<Document> m_collection;
 
         private final boolean                   m_id;
@@ -341,7 +386,7 @@ public final class MongoDB implements Serializable
             m_id = id;
         }
 
-        public boolean isAddingID()
+        public boolean isCreateID()
         {
             return m_id;
         }
@@ -446,7 +491,7 @@ public final class MongoDB implements Serializable
 
         public final Map<String, ?> insertOne(final Map<String, ?> record)
         {
-            if (isAddingID())
+            if (isCreateID())
             {
                 final Map<String, ?> withid = ensureHasID(Objects.requireNonNull(record));
 
@@ -474,13 +519,13 @@ public final class MongoDB implements Serializable
             }
             if (1 == list.size())
             {
-                insertOne(Objects.requireNonNull(list.get(0))); // let this do checkID
+                insertOne(Objects.requireNonNull(list.get(0)));// let this do checkID
 
                 return this;
             }
             final ArrayList<MDocument> save = new ArrayList<MDocument>(list.size());
 
-            if (isAddingID())
+            if (isCreateID())
             {
                 for (Map<String, ?> lmap : list)
                 {
@@ -797,11 +842,12 @@ public final class MongoDB implements Serializable
         }
     }
 
-    public static interface IMCursor extends Iterable<Map<String, ?>>, Iterator<Map<String, ?>>, Closeable
+    public static interface IMCursor extends Iterable<Map<String, ?>>, Iterator<Map<String, ?>>, Closeable, Serializable
     {
         public <A extends Collection<? super Map<String, ?>>> A into(A target);
     }
 
+    @SuppressWarnings("serial")
     protected static abstract class AbstractMCursor<T extends MongoIterable<Document>> implements IMCursor
     {
         private final T                     m_iterab;
@@ -896,6 +942,8 @@ public final class MongoDB implements Serializable
 
     public static final class MIndexCursor extends AbstractMCursor<ListIndexesIterable<Document>>
     {
+        private static final long serialVersionUID = -3979952373278541940L;
+
         protected MIndexCursor(final ListIndexesIterable<Document> index)
         {
             super(index);
@@ -904,6 +952,8 @@ public final class MongoDB implements Serializable
 
     public static final class MAggregateCursor extends AbstractMCursor<AggregateIterable<Document>>
     {
+        private static final long serialVersionUID = 6055665895490538532L;
+
         protected MAggregateCursor(final AggregateIterable<Document> aggreg)
         {
             super(aggreg);
@@ -912,6 +962,8 @@ public final class MongoDB implements Serializable
 
     public static final class MCursor extends AbstractMCursor<FindIterable<Document>>
     {
+        private static final long serialVersionUID = -8017757721498783536L;
+
         protected MCursor(final FindIterable<Document> finder)
         {
             super(finder);
@@ -957,12 +1009,13 @@ public final class MongoDB implements Serializable
         }
     }
 
-    @SuppressWarnings("serial")
     public static final class MSort extends Document
     {
-        private static final BsonInt32 ORDER_A = new BsonInt32(0 + 1);
+        private static final long      serialVersionUID = 2783435122036732033L;
 
-        private static final BsonInt32 ORDER_D = new BsonInt32(0 - 1);
+        private static final BsonInt32 ORDER_A          = new BsonInt32(0 + 1);
+
+        private static final BsonInt32 ORDER_D          = new BsonInt32(0 - 1);
 
         private MSort()
         {
@@ -1046,12 +1099,13 @@ public final class MongoDB implements Serializable
         }
     }
 
-    @SuppressWarnings("serial")
     public static final class MProjection extends Document
     {
-        private static final BsonInt32 INCLUDE_N = new BsonInt32(0);
+        private static final long      serialVersionUID = -7029841572864273906L;
 
-        private static final BsonInt32 INCLUDE_Y = new BsonInt32(1);
+        private static final BsonInt32 INCLUDE_N        = new BsonInt32(0);
+
+        private static final BsonInt32 INCLUDE_Y        = new BsonInt32(1);
 
         private MProjection()
         {
@@ -1134,9 +1188,10 @@ public final class MongoDB implements Serializable
         }
     }
 
-    @SuppressWarnings("serial")
     public static class MQuery extends Document
     {
+        private static final long serialVersionUID = -3875701729530758555L;
+
         private MQuery()
         {
         }
@@ -1238,6 +1293,8 @@ public final class MongoDB implements Serializable
         {
             return new MQuery()
             {
+                private static final long serialVersionUID = -533742570596036469L;
+
                 @Override
                 public <TDocument> BsonDocument toBsonDocument(final Class<TDocument> documentClass, final CodecRegistry codecRegistry)
                 {

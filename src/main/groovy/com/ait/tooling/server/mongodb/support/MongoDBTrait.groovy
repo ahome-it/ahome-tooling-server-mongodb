@@ -26,7 +26,7 @@ import com.ait.tooling.server.mongodb.MongoDB.IMCursor
 import com.ait.tooling.server.mongodb.MongoDB.MAggregationGroup
 import com.ait.tooling.server.mongodb.MongoDB.MAggregationMatch
 import com.ait.tooling.server.mongodb.MongoDB.MCollection
-import com.ait.tooling.server.mongodb.MongoDB.MCollectionOptions
+import com.ait.tooling.server.mongodb.MongoDB.MCollectionPreferences
 import com.ait.tooling.server.mongodb.MongoDB.MDatabase
 import com.ait.tooling.server.mongodb.MongoDB.MProjection
 import com.ait.tooling.server.mongodb.MongoDB.MQuery
@@ -56,7 +56,7 @@ public trait MongoDBTrait
         db().collection(StringOps.requireTrimOrNull(name))
     }
 
-    public MCollection collection(String name, MCollectionOptions opts) throws Exception
+    public MCollection collection(String name, MCollectionPreferences opts) throws Exception
     {
         db().collection(StringOps.requireTrimOrNull(name), opts)
     }
@@ -76,7 +76,7 @@ public trait MongoDBTrait
     @Memoized
     public MongoDB getMongoDB()
     {
-        getMongoDB(getDefaultMongoDBDescriptorName())
+        getMongoDB(getMongoDBDefaultDescriptorName())
     }
 
     @Memoized
@@ -86,9 +86,9 @@ public trait MongoDBTrait
     }
 
     @Memoized
-    public String getDefaultMongoDBDescriptorName()
+    public String getMongoDBDefaultDescriptorName()
     {
-        getMongoDBProvider().getDefaultMongoDBDescriptorName()
+        getMongoDBProvider().getMongoDBDefaultDescriptorName()
     }
 
     public JSONObject json(IMCursor cursor)

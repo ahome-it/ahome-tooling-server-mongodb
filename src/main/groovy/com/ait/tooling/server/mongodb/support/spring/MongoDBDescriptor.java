@@ -19,7 +19,9 @@ package com.ait.tooling.server.mongodb.support.spring;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
@@ -35,33 +37,40 @@ import com.mongodb.ServerAddress;
 
 public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
 {
-    private static final long          serialVersionUID = 4921229488618930502L;
+    private static final long                      serialVersionUID = 4921229488618930502L;
 
-    private static final Logger        logger           = Logger.getLogger(MongoDBDescriptor.class);
+    private static final Logger                    logger           = Logger.getLogger(MongoDBDescriptor.class);
 
-    private String                     m_name;
+    private String                                 m_name;
 
-    private MongoDB                    m_mongo_db;
+    private MongoDB                                m_mongo_db;
 
-    private boolean                    m_createid       = false;
+    private boolean                                m_createid       = false;
 
-    private boolean                    m_replicas       = false;
+    private boolean                                m_replicas       = false;
 
-    private int                        m_poolsize       = 100;
+    private int                                    m_poolsize       = 100;
 
-    private int                        m_multiple       = 100;
+    private int                                    m_multiple       = 100;
 
-    private int                        m_ctimeout       = 10000;
+    private int                                    m_ctimeout       = 10000;
 
-    private String                     m_defaultd;
+    private String                                 m_defaultd;
 
-    private MongoClientOptions         m_coptions;
+    private MongoClientOptions                     m_coptions;
 
-    private ArrayList<ServerAddress>   m_addrlist;
+    private ArrayList<ServerAddress>               m_addrlist;
 
-    private ArrayList<MongoCredential> m_authlist;
+    private ArrayList<MongoCredential>             m_authlist;
 
-    private final String               m_baseprop;
+    private LinkedHashMap<String, IMongoDBOptions> m_doptions;
+
+    private String                                 m_baseprop;
+
+    public MongoDBDescriptor()
+    {
+        m_baseprop = null;
+    }
 
     public MongoDBDescriptor(final String baseprop)
     {
@@ -85,6 +94,10 @@ public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
     {
         try
         {
+            if (null == m_baseprop)
+            {
+                m_baseprop = MongoDBContextInstance.getMongoDBContextInstance().getMongoDBProvider().getMongoDBDefaultDescriptorName();
+            }
             final IPropertiesResolver prop = ServerContextInstance.getServerContextInstance().getPropertiesResolver();
 
             setName(prop.getPropertyByName(m_baseprop + ".name"));
@@ -143,6 +156,60 @@ public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
             {
                 setClientOptions(MongoClientOptions.builder().connectionsPerHost(getConnectionPoolSize()).threadsAllowedToBlockForConnectionMultiplier(getConnectionMultiplier()).connectTimeout(getConnectionTimeout()).build());
             }
+            m_doptions = new LinkedHashMap<String, IMongoDBOptions>();
+
+            final String conf = StringOps.toTrimOrNull(prop.getPropertyByName(m_baseprop + ".dbconfig.list"));
+
+            if (null != conf)
+            {
+                for (String name : conf.split(","))
+                {
+                    name = StringOps.toTrimOrNull(name);
+
+                    if (null != name)
+                    {
+                        if (null == m_doptions.get(name))
+                        {
+                            boolean doid = isCreateID();
+
+                            final ArrayList<IMongoDBCollectionOptions> list = new ArrayList<IMongoDBCollectionOptions>();
+
+                            final String dbid = StringOps.toTrimOrNull(prop.getPropertyByName(m_baseprop + ".dbconfig." + name + ".createid"));
+
+                            if (null != dbid)
+                            {
+                                doid = Boolean.valueOf(dbid);
+                            }
+                            final String base = m_baseprop + ".dbconfig." + name + ".collections";
+
+                            final String cols = StringOps.toTrimOrNull(prop.getPropertyByName(base));
+
+                            if (null != cols)
+                            {
+                                for (String coln : cols.split(","))
+                                {
+                                    coln = StringOps.toTrimOrNull(coln);
+
+                                    if (null != coln)
+                                    {
+                                        final String icid = StringOps.toTrimOrNull(prop.getPropertyByName(base + "." + coln + ".createid"));
+
+                                        if (null != icid)
+                                        {
+                                            list.add(new MongoDBCollectionOptions(coln, Boolean.valueOf(icid)));
+                                        }
+                                        else
+                                        {
+                                            list.add(new MongoDBCollectionOptions(coln, doid));
+                                        }
+                                    }
+                                }
+                            }
+                            m_doptions.put(name, new MongoDBOptions(name, doid, list));
+                        }
+                    }
+                }
+            }
             return true;
         }
         catch (Exception e)
@@ -189,7 +256,7 @@ public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
     {
         if (null == m_mongo_db)
         {
-            m_mongo_db = new MongoDB(getAddresses(), getCredentials(), getClientOptions(), isReplicas(), getDefaultDB(), isCreateID());
+            m_mongo_db = new MongoDB(getAddresses(), getCredentials(), getClientOptions(), isReplicas(), getDefaultDB(), isCreateID(), getDBOptions());
         }
         return m_mongo_db;
     }
@@ -270,5 +337,11 @@ public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
     public MongoClientOptions getClientOptions()
     {
         return m_coptions;
+    }
+
+    @Override
+    public Map<String, IMongoDBOptions> getDBOptions()
+    {
+        return Collections.unmodifiableMap(m_doptions);
     }
 }
