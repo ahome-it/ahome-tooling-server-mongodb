@@ -57,7 +57,6 @@ task('filterConfigs', dependsOn: deleteConfigs, type: Copy) {
 task doJavaDocs(type: Javadoc) {
     source = sourceSets.main.allJava
     failOnError = false
-    exclude '**/com/mongodb/**'
     title = "${getProjectCommonName()} ${getBuildModuleVersion()}"
 }
 
