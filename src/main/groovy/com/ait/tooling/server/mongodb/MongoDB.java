@@ -16,19 +16,6 @@
 
 package com.ait.tooling.server.mongodb;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.exists;
-import static com.mongodb.client.model.Filters.gt;
-import static com.mongodb.client.model.Filters.gte;
-import static com.mongodb.client.model.Filters.in;
-import static com.mongodb.client.model.Filters.lt;
-import static com.mongodb.client.model.Filters.lte;
-import static com.mongodb.client.model.Filters.ne;
-import static com.mongodb.client.model.Filters.nin;
-import static com.mongodb.client.model.Filters.not;
-import static com.mongodb.client.model.Filters.or;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
@@ -1204,32 +1191,32 @@ public final class MongoDB implements Serializable
 
         public static final <T> MQuery EQ(final String name, final T value)
         {
-            return convert(eq(StringOps.requireTrimOrNull(name), value));
+            return convert(com.mongodb.client.model.Filters.eq(StringOps.requireTrimOrNull(name), value));
         }
 
         public static final <T> MQuery NE(final String name, final T value)
         {
-            return convert(ne(StringOps.requireTrimOrNull(name), value));
+            return convert(com.mongodb.client.model.Filters.ne(StringOps.requireTrimOrNull(name), value));
         }
 
         public static final <T> MQuery GT(final String name, final T value)
         {
-            return convert(gt(StringOps.requireTrimOrNull(name), value));
+            return convert(com.mongodb.client.model.Filters.gt(StringOps.requireTrimOrNull(name), value));
         }
 
         public static final <T> MQuery LT(final String name, final T value)
         {
-            return convert(lt(StringOps.requireTrimOrNull(name), value));
+            return convert(com.mongodb.client.model.Filters.lt(StringOps.requireTrimOrNull(name), value));
         }
 
         public static final <T> MQuery GTE(final String name, final T value)
         {
-            return convert(gte(StringOps.requireTrimOrNull(name), value));
+            return convert(com.mongodb.client.model.Filters.gte(StringOps.requireTrimOrNull(name), value));
         }
 
         public static final <T> MQuery LTE(final String name, final T value)
         {
-            return convert(lte(StringOps.requireTrimOrNull(name), value));
+            return convert(com.mongodb.client.model.Filters.lte(StringOps.requireTrimOrNull(name), value));
         }
 
         @SafeVarargs
@@ -1240,7 +1227,7 @@ public final class MongoDB implements Serializable
 
         public static final <T> MQuery IN(final String name, final List<T> list)
         {
-            return convert(in(StringOps.requireTrimOrNull(name), Objects.requireNonNull(list)));
+            return convert(com.mongodb.client.model.Filters.in(StringOps.requireTrimOrNull(name), Objects.requireNonNull(list)));
         }
 
         @SafeVarargs
@@ -1251,7 +1238,7 @@ public final class MongoDB implements Serializable
 
         public static final <T> MQuery NIN(final String name, final List<T> list)
         {
-            return convert(nin(StringOps.requireTrimOrNull(name), Objects.requireNonNull(list)));
+            return convert(com.mongodb.client.model.Filters.nin(StringOps.requireTrimOrNull(name), Objects.requireNonNull(list)));
         }
 
         public static final MQuery AND(final MQuery... list)
@@ -1261,7 +1248,7 @@ public final class MongoDB implements Serializable
 
         public static final MQuery AND(final List<MQuery> list)
         {
-            return convert(and(new ArrayList<Bson>(Objects.requireNonNull(list))));
+            return convert(com.mongodb.client.model.Filters.and(new ArrayList<Bson>(Objects.requireNonNull(list))));
         }
 
         public static final MQuery OR(final MQuery... list)
@@ -1271,22 +1258,22 @@ public final class MongoDB implements Serializable
 
         public static final MQuery OR(final List<MQuery> list)
         {
-            return convert(or(new ArrayList<Bson>(Objects.requireNonNull(list))));
+            return convert(com.mongodb.client.model.Filters.or(new ArrayList<Bson>(Objects.requireNonNull(list))));
         }
 
         public static final MQuery NOT(final MQuery query)
         {
-            return convert(not(Objects.requireNonNull(query)));
+            return convert(com.mongodb.client.model.Filters.not(Objects.requireNonNull(query)));
         }
 
         public static final MQuery EXISTS(final String name, final boolean exists)
         {
-            return convert(exists(StringOps.requireTrimOrNull(name), exists));
+            return convert(com.mongodb.client.model.Filters.exists(StringOps.requireTrimOrNull(name), exists));
         }
 
         public static final MQuery EXISTS(final String name)
         {
-            return convert(exists(StringOps.requireTrimOrNull(name), true));
+            return convert(com.mongodb.client.model.Filters.exists(StringOps.requireTrimOrNull(name), true));
         }
 
         private static final MQuery convert(final Bson b)
