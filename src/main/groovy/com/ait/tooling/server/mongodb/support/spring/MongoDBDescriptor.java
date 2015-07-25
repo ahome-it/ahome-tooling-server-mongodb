@@ -96,7 +96,7 @@ public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
         {
             if (null == m_baseprop)
             {
-                m_baseprop = MongoDBContextInstance.getMongoDBContextInstance().getMongoDBProvider().getMongoDBDefaultDescriptorName();
+                m_baseprop = MongoDBContextInstance.getMongoDBContextInstance().getMongoDBProvider().getMongoDBDefaultPropertiesBase();
             }
             final IPropertiesResolver prop = ServerContextInstance.getServerContextInstance().getPropertiesResolver();
 
