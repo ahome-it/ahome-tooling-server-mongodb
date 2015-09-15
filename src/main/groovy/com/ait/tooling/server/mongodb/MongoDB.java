@@ -55,7 +55,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import com.ait.tooling.common.api.java.util.StringOps;
-import com.ait.tooling.json.JSONUtils;
+import com.ait.tooling.server.core.json.JSONUtils;
 import com.ait.tooling.server.mongodb.support.spring.IMongoDBCollectionOptions;
 import com.ait.tooling.server.mongodb.support.spring.IMongoDBOptions;
 import com.mongodb.MongoClient;

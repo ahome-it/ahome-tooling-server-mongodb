@@ -20,7 +20,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
 import com.ait.tooling.common.api.java.util.StringOps
-import com.ait.tooling.json.JSONObject
+import com.ait.tooling.server.core.json.JSONObject
 import com.ait.tooling.server.core.support.CoreGroovySupport
 import com.ait.tooling.server.mongodb.MongoDB
 import com.ait.tooling.server.mongodb.MongoDB.IMCursor
