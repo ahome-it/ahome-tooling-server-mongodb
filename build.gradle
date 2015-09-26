@@ -16,19 +16,13 @@
 
 buildscript {
     repositories {
-        maven {
-            credentials {
-                username "${artifactory_user}"
-                password "${artifactory_pass}"
-            }
-            url "${artifactory_repo}"
-        }
+        mavenCentral()
     }
     dependencies {
         classpath(group: 'org.ajoberstar', name: 'grgit', version: '1.4.0')
         classpath(group: 'commons-codec', name: 'commons-codec', version: '1.10')
         classpath(group: 'commons-logging', name: 'commons-logging', version: '1.2')
-        classpath(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4.1')
+        classpath(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5')
     }
 }
 
@@ -46,7 +40,7 @@ sourceCompatibility = 1.8
 
 targetCompatibility = 1.8
 
-version = '1.0.114-RELEASE'
+version = '1.0.115-RELEASE'
 
 group = 'com.ahome-it'
 
@@ -160,13 +154,7 @@ def getBuildGITCommitMessage() {
 }
 
 repositories {
-    maven {
-        credentials {
-            username "${artifactory_user}"
-            password "${artifactory_pass}"
-        }
-        url "${artifactory_repo}"
-    }
+    mavenCentral()
 }
 
 sourceSets {
@@ -210,7 +198,7 @@ tasks.withType(GroovyCompile) {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.114-RELEASE')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.115-RELEASE')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.4')
     testCompile(group: 'log4j', name: 'log4j', version: '1.2.17')
     testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.12')
