@@ -41,7 +41,7 @@ sourceCompatibility = 1.8
 
 targetCompatibility = 1.8
 
-version = '1.0.121-RELEASE'
+version = '1.0.122-SNAPSHOT'
 
 group = 'com.ahome-it'
 
@@ -162,6 +162,9 @@ def getBuildGITCommitMessage() {
 
 repositories {
     mavenCentral()
+    maven {
+        url "${sonatype_snapshotURL}"
+    }
 }
 
 task codeCoverage << {
@@ -196,7 +199,7 @@ tasks.withType(GroovyCompile) {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.121-RELEASE')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.0.122-SNAPSHOT')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.0.4')
     testCompile(group: 'log4j', name: 'log4j', version: '1.2.17')
     testCompile(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.12')
@@ -219,7 +222,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            repository(url: "${sonatype_stageingURL}") {
+            repository(url: "${sonatype_snapshotURL}") {
                 authentication(userName: "${sonatype_user}", password: "${sonatype_password}")
             }
             pom.project {
