@@ -129,12 +129,12 @@ public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
             }
             m_addrlist = addrlist;
 
+            m_authlist = new ArrayList<MongoCredential>();
+
             final String temp = StringOps.toTrimOrNull(prop.getPropertyByName(m_baseprop + ".auth.list"));
 
             if (null != temp)
             {
-                final ArrayList<MongoCredential> authlist = new ArrayList<MongoCredential>();
-
                 for (String name : temp.split(","))
                 {
                     name = StringOps.toTrimOrNull(name);
@@ -147,10 +147,9 @@ public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
 
                         final String data = StringOps.requireTrimOrNull(prop.getPropertyByName(m_baseprop + ".auth." + name + ".db"));
 
-                        authlist.add(MongoCredential.createCredential(user, data, pass.toCharArray()));
+                        m_authlist.add(MongoCredential.createCredential(user, data, pass.toCharArray()));
                     }
                 }
-                m_authlist = authlist;
             }
             if (null == getClientOptions())
             {
