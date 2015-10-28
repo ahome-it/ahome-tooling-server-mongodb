@@ -192,7 +192,7 @@ public final class MongoDB implements Serializable
     {
         name = StringOps.requireTrimOrNull(name);
 
-        final IMongoDBOptions op = m_dbops.get(name);
+        IMongoDBOptions op = m_dbops.get(name);
 
         if (null != op)
         {
@@ -215,9 +215,9 @@ public final class MongoDB implements Serializable
         {
             m_id = id;
 
-            m_db = Objects.requireNonNull(db);
+            m_op = op;
 
-            m_op = Objects.requireNonNull(op);
+            m_db = Objects.requireNonNull(db);
         }
 
         public boolean isCreateID()
@@ -249,16 +249,16 @@ public final class MongoDB implements Serializable
         {
             name = StringOps.requireTrimOrNull(name);
 
-            final IMongoDBCollectionOptions cops = m_op.getCollectionOptions(name);
+            if (null != m_op)
+            {
+                final IMongoDBCollectionOptions cops = m_op.getCollectionOptions(name);
 
-            if (null != cops)
-            {
-                return new MCollection(m_db.getCollection(name), cops.isCreateID());
+                if (null != cops)
+                {
+                    return new MCollection(m_db.getCollection(name), cops.isCreateID());
+                }
             }
-            else
-            {
-                return new MCollection(m_db.getCollection(name), isCreateID());
-            }
+            return new MCollection(m_db.getCollection(name), isCreateID());
         }
 
         public final MCollection collection(String name, final MCollectionPreferences opts) throws Exception
@@ -267,20 +267,20 @@ public final class MongoDB implements Serializable
 
             boolean crid = isCreateID();
 
-            final IMongoDBCollectionOptions cops = m_op.getCollectionOptions(name);
+            if (null != m_op)
+            {
+                final IMongoDBCollectionOptions cops = m_op.getCollectionOptions(name);
 
-            if (null != cops)
-            {
-                crid = cops.isCreateID();
+                if (null != cops)
+                {
+                    crid = cops.isCreateID();
+                }
+                if ((null != opts) && (opts.isValid()))
+                {
+                    return opts.withCollectionOptions(m_db.getCollection(name), crid);
+                }
             }
-            if ((null != opts) && (opts.isValid()))
-            {
-                return opts.withCollectionOptions(m_db.getCollection(name), crid);
-            }
-            else
-            {
-                return new MCollection(m_db.getCollection(name), crid);
-            }
+            return new MCollection(m_db.getCollection(name), crid);
         }
     }
 
