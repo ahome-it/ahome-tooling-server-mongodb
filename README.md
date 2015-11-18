@@ -14,23 +14,23 @@ Maven:
 <dependency>
   <groupId>com.ahome-it</groupId>
   <artifactId>ahome-tooling-server-mongodb</artifactId>
-  <version>1.0.126-SNAPSHOT</version>
+  <version>1.0.131-SNAPSHOT</version>
 </dependency>
 ```
 Gradle:
 
 ```
 dependencies {
-    compile(group:'com.ahome-it',name:'ahome-tooling-server-mongodb',version:'1.0.126-SNAPSHOT')
+    compile(group:'com.ahome-it',name:'ahome-tooling-server-mongodb',version:'1.0.131-SNAPSHOT')
 }
 ```
 Javadoc URL:
 
-http://lienzo-core.com/documents/javadoc/ahome-tooling-server-mongodb
+https://lienzo-core.com/documents/javadoc/ahome-tooling-server-mongodb
 
 License:
 
-Copyright (c) 2014,2015 Ahome Innovation Technologies. All rights reserved.
+Copyright (c) 2014,2015,2016 Ahome Innovation Technologies. All rights reserved.
 
 Ahome Tooling Server MongoDB is released under version 2.0 of the Apache License.
 

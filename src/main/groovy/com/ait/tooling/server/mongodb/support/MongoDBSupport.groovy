@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014,2015 Ahome' Innovation Technologies. All rights reserved.
+ * Copyright (c) 2014,2015,2016 Ahome' Innovation Technologies. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,9 @@ import com.ait.tooling.server.mongodb.support.spring.IMongoDBProvider
 import com.ait.tooling.server.mongodb.support.spring.MongoDBContextInstance
 
 @CompileStatic
-public class MongoDBSupport extends CoreGroovySupport implements Serializable
+public class MongoDBSupport extends CoreGroovySupport
 {
     private static final MongoDBSupport INSTANCE = new MongoDBSupport()
-
-    private static final long serialVersionUID = 1628088544127287195L
 
     @Memoized
     public static final MongoDBSupport getMongoDBSupport()
