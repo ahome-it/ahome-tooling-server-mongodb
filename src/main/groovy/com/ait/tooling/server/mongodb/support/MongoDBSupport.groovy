@@ -19,6 +19,8 @@ package com.ait.tooling.server.mongodb.support
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
+import java.util.Map;
+
 import com.ait.tooling.common.api.java.util.StringOps
 import com.ait.tooling.server.core.json.JSONObject
 import com.ait.tooling.server.core.support.CoreGroovySupport
@@ -219,6 +221,21 @@ public class MongoDBSupport extends CoreGroovySupport
     public MProjection FIELDS(List<MProjection> projections)
     {
         MProjection.FIELDS(projections)
+    }
+
+    public MQuery QUERY(Map map)
+    {
+        MQuery.QUERY(map)
+    }
+
+    public MQuery QUERY(MQuery... queries)
+    {
+        MQuery.AND(queries)
+    }
+
+    public MQuery QUERY(List<MQuery> queries)
+    {
+        MQuery.AND(queries)
     }
 
     public <T> MQuery EQ(String name, T value)

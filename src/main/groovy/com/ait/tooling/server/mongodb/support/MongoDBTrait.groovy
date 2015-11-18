@@ -19,6 +19,9 @@ package com.ait.tooling.server.mongodb.support
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 
+import java.util.List;
+import java.util.Map;
+
 import com.ait.tooling.common.api.java.util.StringOps
 import com.ait.tooling.server.core.json.JSONObject
 import com.ait.tooling.server.mongodb.MongoDB
@@ -208,6 +211,21 @@ public trait MongoDBTrait
         MProjection.FIELDS(projections)
     }
 
+    public MQuery QUERY(Map map)
+    {
+        MQuery.QUERY(map)
+    }
+
+    public MQuery QUERY(MQuery... queries)
+    {
+        MQuery.AND(queries)
+    }
+
+    public MQuery QUERY(List<MQuery> queries)
+    {
+        MQuery.AND(queries)
+    }
+
     public <T> MQuery EQ(String name, T value)
     {
         MQuery.EQ(name, value)
@@ -294,7 +312,7 @@ public trait MongoDBTrait
     {
         MQuery.EXISTS(name)
     }
-    
+
     public MAggregationMatch MATCH(Map map)
     {
         new MAggregationMatch(map)

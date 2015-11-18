@@ -1202,6 +1202,11 @@ public final class MongoDB implements Serializable
             super(Objects.requireNonNull((Map<String, Object>) map));
         }
 
+        public static final MQuery QUERY(final Map<String, ?> map)
+        {
+            return new MQuery(map);
+        }
+
         public static final <T> MQuery EQ(final String name, final T value)
         {
             return convert(eq(StringOps.requireTrimOrNull(name), value));

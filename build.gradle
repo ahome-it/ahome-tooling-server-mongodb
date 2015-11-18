@@ -41,7 +41,7 @@ sourceCompatibility = 1.8
 
 targetCompatibility = 1.8
 
-version = '1.0.131-SNAPSHOT'
+version = '1.0.131.1-SNAPSHOT'
 
 group = 'com.ahome-it'
 
