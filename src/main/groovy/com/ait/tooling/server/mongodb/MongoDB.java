@@ -88,6 +88,12 @@ public final class MongoDB implements Serializable
 
     private final Map<String, IMongoDBOptions> m_dbops;
 
+    @SuppressWarnings("unchecked")
+    private static final Map<String, Object> CAST_MAP(Map<String, ?> map)
+    {
+        return (Map<String, Object>) Objects.requireNonNull(map);
+    }
+
     public MongoDB(final List<ServerAddress> addr, final List<MongoCredential> auth, final MongoClientOptions opts, final boolean repl, final String usedb, final boolean useid, final Map<String, IMongoDBOptions> dbops)
     {
         m_useid = useid;
@@ -398,17 +404,17 @@ public final class MongoDB implements Serializable
 
         public final String createIndex(final Map<String, ?> keys)
         {
-            return m_collection.createIndex(new MDocument(keys));
+            return m_collection.createIndex(new Document(CAST_MAP(keys)));
         }
 
         public final String createIndex(final Map<String, ?> keys, final String name)
         {
-            return m_collection.createIndex(new MDocument(keys), new IndexOptions().name(Objects.requireNonNull(name)));
+            return m_collection.createIndex(new Document(CAST_MAP(keys)), new IndexOptions().name(Objects.requireNonNull(name)));
         }
 
         public final String createIndex(final Map<String, ?> keys, final IndexOptions opts)
         {
-            return m_collection.createIndex(new MDocument(keys), Objects.requireNonNull(opts));
+            return m_collection.createIndex(new Document(CAST_MAP(keys)), Objects.requireNonNull(opts));
         }
 
         public final MCollection dropIndex(final String name)
@@ -495,13 +501,13 @@ public final class MongoDB implements Serializable
             {
                 final Map<String, ?> withid = ensureHasID(Objects.requireNonNull(record));
 
-                m_collection.insertOne(new MDocument(Objects.requireNonNull(withid)));
+                m_collection.insertOne(new Document(CAST_MAP(withid)));
 
                 return withid;
             }
             else
             {
-                m_collection.insertOne(new MDocument(Objects.requireNonNull(record)));
+                m_collection.insertOne(new Document(CAST_MAP(record)));
 
                 return record;
             }
@@ -523,20 +529,20 @@ public final class MongoDB implements Serializable
 
                 return this;
             }
-            final ArrayList<MDocument> save = new ArrayList<MDocument>(list.size());
+            final ArrayList<Document> save = new ArrayList<Document>(list.size());
 
             if (isCreateID())
             {
                 for (Map<String, ?> lmap : list)
                 {
-                    save.add(new MDocument(ensureHasID(Objects.requireNonNull(lmap))));
+                    save.add(new Document(CAST_MAP(ensureHasID(lmap))));
                 }
             }
             else
             {
                 for (Map<String, ?> lmap : list)
                 {
-                    save.add(new MDocument(Objects.requireNonNull(lmap)));
+                    save.add(new Document(CAST_MAP(ensureHasID(lmap))));
                 }
             }
             m_collection.insertMany(save);
@@ -684,11 +690,11 @@ public final class MongoDB implements Serializable
         {
             if (multi)
             {
-                m_collection.updateMany(Objects.requireNonNull(query), new MDocument(Objects.requireNonNull(update)), new UpdateOptions().upsert(upsert));
+                m_collection.updateMany(Objects.requireNonNull(query), new Document(CAST_MAP(update)), new UpdateOptions().upsert(upsert));
             }
             else
             {
-                m_collection.updateOne(Objects.requireNonNull(query), new MDocument(Objects.requireNonNull(update)), new UpdateOptions().upsert(upsert));
+                m_collection.updateOne(Objects.requireNonNull(query), new Document(CAST_MAP(update)), new UpdateOptions().upsert(upsert));
             }
             return update;
         }
@@ -716,7 +722,7 @@ public final class MongoDB implements Serializable
 
         public final boolean updateOne(final MQuery query, final Map<String, ?> update)
         {
-            return (m_collection.updateOne(Objects.requireNonNull(query), new MDocument(Objects.requireNonNull(update))).getModifiedCount() == 1L);
+            return (m_collection.updateOne(Objects.requireNonNull(query), new Document(CAST_MAP(update))).getModifiedCount() == 1L);
         }
 
         public final long updateMany(final Map<String, ?> query, final Map<String, ?> update)
@@ -726,7 +732,7 @@ public final class MongoDB implements Serializable
 
         public final long updateMany(final MQuery query, final Map<String, ?> update)
         {
-            return m_collection.updateMany(Objects.requireNonNull(query), new MDocument(Objects.requireNonNull(update)), new UpdateOptions().upsert(false)).getModifiedCount();
+            return m_collection.updateMany(Objects.requireNonNull(query), new Document(CAST_MAP(update)), new UpdateOptions().upsert(false)).getModifiedCount();
         }
 
         public final List<?> distinct(final String field)
@@ -736,9 +742,7 @@ public final class MongoDB implements Serializable
 
         public final List<?> distinct(final String field, final Map<String, ?> query)
         {
-            Objects.requireNonNull(query);
-
-            return m_collection.distinct(StringOps.requireTrimOrNull(field), Document.class).filter(new MDocument(query)).into(new ArrayList<Document>());
+            return m_collection.distinct(StringOps.requireTrimOrNull(field), Document.class).filter(new Document(CAST_MAP(query))).into(new ArrayList<Document>());
         }
     }
 
@@ -992,20 +996,6 @@ public final class MongoDB implements Serializable
         public MCursor sort(final MSort sort)
         {
             return new MCursor(self().sort(Objects.requireNonNull(sort)));
-        }
-    }
-
-    @SuppressWarnings("serial")
-    public static final class MDocument extends Document
-    {
-        public MDocument()
-        {
-        }
-
-        @SuppressWarnings("unchecked")
-        public MDocument(final Map<String, ?> map)
-        {
-            super(Objects.requireNonNull((Map<String, Object>) map));
         }
     }
 
