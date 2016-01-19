@@ -17,7 +17,6 @@
 package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.Closeable;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
-public interface IMongoDBDescriptor extends IMongoDBConfigurationBase, IActivatable, Closeable, Serializable
+public interface IMongoDBDescriptor extends IMongoDBConfigurationBase, IActivatable, Closeable
 {
     public MongoDB getMongoDB();
 

@@ -17,10 +17,9 @@
 package com.ait.tooling.server.mongodb.support.spring;
 
 import java.io.Closeable;
-import java.io.Serializable;
 import java.util.List;
 
-public interface IMongoDBProvider extends Closeable, Serializable
+public interface IMongoDBProvider extends Closeable
 {
     public IMongoDBDescriptor getMongoDBDescriptor(String name);
 

@@ -22,9 +22,7 @@ import com.ait.tooling.server.core.support.spring.ServerContextInstance;
 
 public class MongoDBContextInstance extends ServerContextInstance implements IMongoDBContext
 {
-    private static final long                   serialVersionUID = -6874993005542735844L;
-
-    private static final MongoDBContextInstance INSTANCE         = new MongoDBContextInstance();
+    private static final MongoDBContextInstance INSTANCE = new MongoDBContextInstance();
 
     public static final MongoDBContextInstance getMongoDBContextInstance()
     {

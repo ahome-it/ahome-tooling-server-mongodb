@@ -20,11 +20,9 @@ import com.ait.tooling.common.api.java.util.StringOps;
 
 public class MongoDBCollectionOptions implements IMongoDBCollectionOptions
 {
-    private static final long serialVersionUID = -6973950691503354580L;
+    private final boolean m_icid;
 
-    private final boolean     m_icid;
-
-    private final String      m_name;
+    private final String  m_name;
 
     public MongoDBCollectionOptions(final String name, final boolean icid)
     {

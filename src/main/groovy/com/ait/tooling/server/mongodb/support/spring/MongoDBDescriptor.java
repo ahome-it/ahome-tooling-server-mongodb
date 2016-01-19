@@ -37,23 +37,21 @@ import com.mongodb.ServerAddress;
 
 public class MongoDBDescriptor extends Activatable implements IMongoDBDescriptor
 {
-    private static final long                      serialVersionUID = 4921229488618930502L;
-
-    private static final Logger                    logger           = Logger.getLogger(MongoDBDescriptor.class);
+    private static final Logger                    logger     = Logger.getLogger(MongoDBDescriptor.class);
 
     private String                                 m_name;
 
     private MongoDB                                m_mongo_db;
 
-    private boolean                                m_createid       = false;
+    private boolean                                m_createid = false;
 
-    private boolean                                m_replicas       = false;
+    private boolean                                m_replicas = false;
 
-    private int                                    m_poolsize       = 100;
+    private int                                    m_poolsize = 100;
 
-    private int                                    m_multiple       = 100;
+    private int                                    m_multiple = 100;
 
-    private int                                    m_ctimeout       = 10000;
+    private int                                    m_ctimeout = 10000;
 
     private String                                 m_defaultd;
 

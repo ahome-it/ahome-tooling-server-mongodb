@@ -16,11 +16,9 @@
 
 package com.ait.tooling.server.mongodb.support.spring;
 
-import java.io.Serializable;
-
 import com.ait.tooling.common.api.types.INamed;
 
-public interface IMongoDBConfigurationBase extends INamed, Serializable
+public interface IMongoDBConfigurationBase extends INamed
 {
     public boolean isCreateID();
 }

@@ -31,7 +31,6 @@ import static com.mongodb.client.model.Filters.or;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -74,11 +73,9 @@ import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.UpdateOptions;
 
-public final class MongoDB implements Serializable
+public final class MongoDB
 {
-    private static final long                  serialVersionUID = 2378917194666504499L;
-
-    private static final Logger                logger           = Logger.getLogger(MongoDB.class);
+    private static final Logger                logger = Logger.getLogger(MongoDB.class);
 
     private final MongoClient                  m_mongo;
 
@@ -207,10 +204,8 @@ public final class MongoDB implements Serializable
         return new MDatabase(m_mongo.getDatabase(name), id, op);
     }
 
-    public static final class MDatabase implements Serializable
+    public static final class MDatabase
     {
-        private static final long     serialVersionUID = 4004001784763847556L;
-
         private final MongoDatabase   m_db;
 
         private final IMongoDBOptions m_op;
@@ -290,10 +285,8 @@ public final class MongoDB implements Serializable
         }
     }
 
-    public static final class MCollectionPreferences implements Serializable
+    public static final class MCollectionPreferences
     {
-        private static final long    serialVersionUID = -4813050133142084711L;
-
         private final WriteConcern   m_write;
 
         private final ReadPreference m_prefs;
@@ -377,10 +370,8 @@ public final class MongoDB implements Serializable
         }
     }
 
-    public static final class MCollection implements Serializable
+    public static final class MCollection
     {
-        private static final long               serialVersionUID = -3505901155958595732L;
-
         private final MongoCollection<Document> m_collection;
 
         private final boolean                   m_id;
@@ -823,11 +814,9 @@ public final class MongoDB implements Serializable
         }
     }
 
-    public static final class MAggregationPipeline implements Serializable
+    public static final class MAggregationPipeline
     {
-        private static final long         serialVersionUID = 6751726485032397782L;
-
-        private final ArrayList<Document> m_pipeline       = new ArrayList<Document>();
+        private final ArrayList<Document> m_pipeline = new ArrayList<Document>();
 
         public <T extends Document> MAggregationPipeline(final List<T> list)
         {
@@ -846,13 +835,12 @@ public final class MongoDB implements Serializable
         }
     }
 
-    public static interface IMCursor extends Iterable<Map<String, ?>>, Iterator<Map<String, ?>>, Closeable, Serializable
+    public static interface IMCursor extends Iterable<Map<String, ?>>, Iterator<Map<String, ?>>, Closeable
     {
         public <A extends Collection<? super Map<String, ?>>> A into(A target);
     }
 
-    @SuppressWarnings("serial")
-    protected static abstract class AbstractMCursor<T extends MongoIterable<Document>> implements IMCursor
+    protected static abstract class AbstractMCursor<T extends MongoIterable<Document>>implements IMCursor
     {
         private final T                     m_iterab;
 
@@ -946,8 +934,6 @@ public final class MongoDB implements Serializable
 
     public static final class MIndexCursor extends AbstractMCursor<ListIndexesIterable<Document>>
     {
-        private static final long serialVersionUID = -3979952373278541940L;
-
         protected MIndexCursor(final ListIndexesIterable<Document> index)
         {
             super(index);
@@ -956,8 +942,6 @@ public final class MongoDB implements Serializable
 
     public static final class MAggregateCursor extends AbstractMCursor<AggregateIterable<Document>>
     {
-        private static final long serialVersionUID = 6055665895490538532L;
-
         protected MAggregateCursor(final AggregateIterable<Document> aggreg)
         {
             super(aggreg);
@@ -966,8 +950,6 @@ public final class MongoDB implements Serializable
 
     public static final class MCursor extends AbstractMCursor<FindIterable<Document>>
     {
-        private static final long serialVersionUID = -8017757721498783536L;
-
         protected MCursor(final FindIterable<Document> finder)
         {
             super(finder);
@@ -999,13 +981,12 @@ public final class MongoDB implements Serializable
         }
     }
 
+    @SuppressWarnings("serial")
     public static final class MSort extends Document
     {
-        private static final long      serialVersionUID = 2783435122036732033L;
+        private static final BsonInt32 ORDER_A = new BsonInt32(0 + 1);
 
-        private static final BsonInt32 ORDER_A          = new BsonInt32(0 + 1);
-
-        private static final BsonInt32 ORDER_D          = new BsonInt32(0 - 1);
+        private static final BsonInt32 ORDER_D = new BsonInt32(0 - 1);
 
         private MSort()
         {
@@ -1089,13 +1070,12 @@ public final class MongoDB implements Serializable
         }
     }
 
+    @SuppressWarnings("serial")
     public static final class MProjection extends Document
     {
-        private static final long      serialVersionUID = -7029841572864273906L;
+        private static final BsonInt32 INCLUDE_N = new BsonInt32(0);
 
-        private static final BsonInt32 INCLUDE_N        = new BsonInt32(0);
-
-        private static final BsonInt32 INCLUDE_Y        = new BsonInt32(1);
+        private static final BsonInt32 INCLUDE_Y = new BsonInt32(1);
 
         private MProjection()
         {
@@ -1178,10 +1158,9 @@ public final class MongoDB implements Serializable
         }
     }
 
+    @SuppressWarnings("serial")
     public static class MQuery extends Document
     {
-        private static final long serialVersionUID = -3875701729530758555L;
-
         private MQuery()
         {
         }
@@ -1288,8 +1267,6 @@ public final class MongoDB implements Serializable
         {
             return new MQuery()
             {
-                private static final long serialVersionUID = -533742570596036469L;
-
                 @Override
                 public <TDocument> BsonDocument toBsonDocument(final Class<TDocument> documentClass, final CodecRegistry codecRegistry)
                 {

@@ -24,13 +24,11 @@ import com.ait.tooling.common.api.java.util.StringOps;
 
 public class MongoDBOptions implements IMongoDBOptions
 {
-    private static final long                                      serialVersionUID = -3111918283521499596L;
-
     private final boolean                                          m_icid;
 
     private final String                                           m_name;
 
-    private final LinkedHashMap<String, IMongoDBCollectionOptions> m_opts           = new LinkedHashMap<String, IMongoDBCollectionOptions>();
+    private final LinkedHashMap<String, IMongoDBCollectionOptions> m_opts = new LinkedHashMap<String, IMongoDBCollectionOptions>();
 
     public MongoDBOptions(final String name, final boolean icid, final List<IMongoDBCollectionOptions> list)
     {

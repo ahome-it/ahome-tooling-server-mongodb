@@ -36,15 +36,13 @@ import com.ait.tooling.common.api.java.util.StringOps;
 @ManagedResource
 public class MongoDBProvider implements BeanFactoryAware, IMongoDBProvider
 {
-    private static final long                               serialVersionUID = 5417970249518001367L;
-
-    private static final Logger                             logger           = Logger.getLogger(MongoDBProvider.class);
+    private static final Logger                             logger        = Logger.getLogger(MongoDBProvider.class);
 
     private final String                                    m_default_name;
 
     private final String                                    m_default_base;
 
-    private final LinkedHashMap<String, IMongoDBDescriptor> m_descriptors    = new LinkedHashMap<String, IMongoDBDescriptor>();
+    private final LinkedHashMap<String, IMongoDBDescriptor> m_descriptors = new LinkedHashMap<String, IMongoDBDescriptor>();
 
     public MongoDBProvider(final String default_base, final String default_name)
     {
