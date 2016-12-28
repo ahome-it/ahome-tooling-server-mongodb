@@ -14,14 +14,14 @@ Maven:
 <dependency>
   <groupId>com.ahome-it</groupId>
   <artifactId>ahome-tooling-server-mongodb</artifactId>
-  <version>1.1.26-RELEASE</version>
+  <version>1.1.28-RELEASE</version>
 </dependency>
 ```
 Gradle:
 
 ```
 dependencies {
-    compile(group:'com.ahome-it',name:'ahome-tooling-server-mongodb',version:'1.1.26-RELEASE')
+    compile(group:'com.ahome-it',name:'ahome-tooling-server-mongodb',version:'1.1.28-RELEASE')
 }
 ```
 Javadoc URL:
