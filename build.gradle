@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014,2015,2016 Ahome' Innovation Technologies. All rights reserved.
+ * Copyright (c) 2017 Ahome' Innovation Technologies. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ sourceCompatibility = 1.8
 
 targetCompatibility = 1.8
 
-version = '1.1.28-RELEASE'
+version = '1.1.29-RELEASE'
 
 group = 'com.ahome-it'
 
@@ -199,7 +199,7 @@ tasks.withType(GroovyCompile) {
 }
 
 dependencies {
-    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.1.28-RELEASE')
+    compile(group: 'com.ahome-it', name: 'ahome-tooling-server-core', version: '1.1.29-RELEASE')
     compile(group: 'org.mongodb', name: 'mongodb-driver', version: '3.4.1')
     testCompile(group: 'log4j', name: 'log4j', version: '1.2.17')
     testCompile(group: 'log4j', name: 'apache-log4j-extras', version:'1.2.17')
